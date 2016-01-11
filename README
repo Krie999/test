@@ -1,0 +1,5 @@
+Hello source repo !
+
+keep folders in sync
+
+sync-files --watch src/main/webapp build/exploded-app

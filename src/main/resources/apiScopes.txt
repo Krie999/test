@@ -1,0 +1,7 @@
+# this file is used to keep track of all api scopes, so to add a new scope
+# we can copy paste from here, since Gapps Admin is a hell to just add a scope.
+
+#directory api to get all members of a group --> determine roles
+https://www.googleapis.com/auth/admin.directory.group.readonly,
+https://www.googleapis.com/auth/admin.directory.group.member.readonly,
+https://www.googleapis.com/auth/admin.directory.user.readonly
