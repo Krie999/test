@@ -5,17 +5,6 @@
 	id="WebApp_ID" version="2.5">
 
 
-	<servlet>
-		<servlet-name>sendNotificationReminders</servlet-name>
-		<servlet-class>io.fourcast.bnppf.servlets.NotificationServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>sendNotificationReminders</servlet-name>
-		<url-pattern>/sendNotificationReminders</url-pattern>
-	</servlet-mapping>
-
-
-
 	<filter>
 		<filter-name>ObjectifyFilter</filter-name>
 		<filter-class>com.googlecode.objectify.ObjectifyFilter</filter-class>
@@ -27,20 +16,9 @@
 		<init-param>
 			<param-name>services</param-name>
 			<param-value>
-				io.fourcast.bnppf.service.AdminService,
-                io.fourcast.bnppf.service.UserService,
-                io.fourcast.bnppf.service.SmartService,
-                io.fourcast.bnppf.service.CocamatService,
-                io.fourcast.bnppf.service.SpaceService,
-                io.fourcast.bnppf.service.LmdService,
-                io.fourcast.bnppf.service.CommsService,
-                io.fourcast.bnppf.service.ChannelsService,
-                io.fourcast.bnppf.service.FieldOptionService,
-                io.fourcast.bnppf.service.ChannelOptionService,
-                io.fourcast.bnppf.service.SearchService,
-				io.fourcast.bnppf.service.ReportService,
-				io.fourcast.bnppf.service.NotificationService,
-				io.fourcast.bnppf.service.FilterService
+				io.fourcast.gae.service.AdminService,
+                io.fourcast.gae.service.UserService,
+                io.fourcast.gae.service.ProjectService
             </param-value>
 		</init-param>
 	</servlet>

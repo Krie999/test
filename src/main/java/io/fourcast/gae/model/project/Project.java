@@ -1,28 +1,21 @@
-package io.fourcast.gae.model.smart;
+package io.fourcast.gae.model.project;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
-
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import com.google.api.server.spi.config.ApiTransformer;
-import com.google.appengine.api.datastore.Text;
 import com.googlecode.objectify.Ref;
 import com.googlecode.objectify.annotation.Entity;
-import com.googlecode.objectify.annotation.Index;
 
 import io.fourcast.gae.model.common.DSEntry;
-import io.fourcast.gae.model.transformer.SmartProjectTransformer;
-import io.fourcast.gae.model.user.DSUser;
+import io.fourcast.gae.model.transformer.ProjectTransformer;
+import io.fourcast.gae.model.user.User;
 
 @Entity
 @SuppressWarnings("serial")
-@ApiTransformer(SmartProjectTransformer.class)
-public class SmartProject extends DSEntry implements Serializable {
+@ApiTransformer(ProjectTransformer.class)
+public class Project extends DSEntry implements Serializable {
 
     public enum PROJECT_STATUS {
         ACTIVE,
@@ -35,7 +28,7 @@ public class SmartProject extends DSEntry implements Serializable {
      **/
     private List<Long> subProjectIds;
 
-    private Ref<DSUser> owner;
+    private Ref<User> owner;
 
 
     public void addSubProjectId(Long subProjectId) {
@@ -49,11 +42,11 @@ public class SmartProject extends DSEntry implements Serializable {
         }
     }
 
-    public Ref<DSUser> getOwner() {
+    public Ref<User> getOwner() {
         return owner;
     }
 
-    public void setOwner(Ref<DSUser> owner) {
+    public void setOwner(Ref<User> owner) {
         this.owner = owner;
     }
 
@@ -68,4 +61,23 @@ public class SmartProject extends DSEntry implements Serializable {
         this.subProjectIds = subProjects;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Project project = (Project) o;
+
+        if (subProjectIds != null ? !subProjectIds.equals(project.subProjectIds) : project.subProjectIds != null)
+            return false;
+        return !(owner != null ? !owner.equals(project.owner) : project.owner != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = subProjectIds != null ? subProjectIds.hashCode() : 0;
+        result = 31 * result + (owner != null ? owner.hashCode() : 0);
+        return result;
+    }
 }

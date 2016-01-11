@@ -6,7 +6,7 @@ import com.google.api.services.admin.directory.Directory;
 import com.google.api.services.admin.directory.model.Member;
 import com.google.api.services.admin.directory.model.Members;
 import io.fourcast.gae.manager.service.GoogleDirectoryService;
-import io.fourcast.gae.model.user.DSUser;
+import io.fourcast.gae.model.user.User;
 import io.fourcast.gae.util.Globals;
 
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class UserManager {
      * @return the User object, with it's email address and display name
      * @throws IOException        when the user's profile can't be read.
      */
-    public DSUser getRemoteUserDetails(String userEmail) throws Exception {
+    public User getRemoteUserDetails(String userEmail) throws Exception {
         //get email for id
         Directory.Users.Get userRequest = getDirectoryService().users().get(userEmail);
         com.google.api.services.admin.directory.model.User user;
@@ -43,7 +43,7 @@ public class UserManager {
             throw new Exception(e.getDetails().getMessage());
         }
 
-        DSUser dsUser = new DSUser();
+        User dsUser = new User();
         dsUser.setActive(!user.getSuspended());
         dsUser.setId(user.getId());
         dsUser.setEmail(user.getPrimaryEmail());
@@ -65,17 +65,17 @@ public class UserManager {
         return dsUser;
     }
 
-    private void parseUserOrgForUser(ArrayMap<Object, Object> org, DSUser dsUser) {
+    private void parseUserOrgForUser(ArrayMap<Object, Object> org, User user) {
 
         //set values from org unit to user as needed
     }
 
     /**
-     * @param dsUser the user for which to validate the roles. Removes all roles and checks with Google Groups
+     * @param user the user for which to validate the roles. Removes all roles and checks with Google Groups
      *                which roles to add.
      * @throws IOException        when the Google Groups can't be read
      */
-    private void validateUserRoles(DSUser dsUser) throws Exception {
+    private void validateUserRoles(User user) throws Exception {
         Date now = new Date();
         if (now.getTime() - cacheTimestamp > Globals.MAX_GROUP_MEMBERSHIP__CACHE_AGE) {
             groupMemberCacheForGroup = new HashMap<>();
@@ -83,9 +83,9 @@ public class UserManager {
         }
 
         //clear stored roles, we'll add the right ones now
-        dsUser.clearRoles();
+        user.clearRoles();
         //always add basic user role for login
-        dsUser.addRole(Globals.USER_ROLE.ROLE_USER);
+        user.addRole(Globals.USER_ROLE.ROLE_USER);
 
         //add all groups to be checked for membership (except the 'ROLE_GROUP', as this is no google group)
         List<String> groups = Arrays.asList(
@@ -102,8 +102,8 @@ public class UserManager {
                 members = getGroupMembersForGroup(group);
                 groupMemberCacheForGroup.put(group, members);
             }
-            if (isUserMemberOfGroup(dsUser.getEmail(), members)) {
-                dsUser.addRole(Globals.USER_ROLE.fromEmail(group));
+            if (isUserMemberOfGroup(user.getEmail(), members)) {
+                user.addRole(Globals.USER_ROLE.fromEmail(group));
             }
         }
     }

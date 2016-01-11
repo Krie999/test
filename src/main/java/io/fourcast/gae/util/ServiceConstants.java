@@ -1,4 +1,4 @@
-package io.fourcast.gae.service;
+package io.fourcast.gae.util;
 
 /**
  * Created by nbuekers on 11/01/16.

@@ -5,7 +5,7 @@ import com.google.api.server.spi.config.ApiResourceProperty;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.*;
 import io.fourcast.gae.util.Globals;
-import io.fourcast.gae.model.root.DSUserRoot;
+import io.fourcast.gae.model.root.UserRoot;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -18,11 +18,11 @@ import java.util.List;
 
 @Entity
 @Unindex
-public class DSUser implements Comparable<DSUser> {
+public class User implements Comparable<User> {
 
 
     @Parent
-    private Key<DSUserRoot> userRoot;
+    private Key<UserRoot> userRoot;
 
     @Id
     @NotNull
@@ -113,11 +113,11 @@ public class DSUser implements Comparable<DSUser> {
 
 
     @ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
-    public Key<DSUserRoot> getUserRoot() {
+    public Key<UserRoot> getUserRoot() {
         return userRoot;
     }
 
-    public void setUserRoot(Key<DSUserRoot> userRoot) {
+    public void setUserRoot(Key<UserRoot> userRoot) {
         this.userRoot = userRoot;
     }
 
@@ -130,7 +130,7 @@ public class DSUser implements Comparable<DSUser> {
     }
 
     @Override
-    public int compareTo(DSUser o) {
+    public int compareTo(User o) {
         return this.getEmail().compareTo(o.getEmail());
     }
 
@@ -139,15 +139,15 @@ public class DSUser implements Comparable<DSUser> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        DSUser dsUser = (DSUser) o;
+        User user = (User) o;
 
-        if (userRoot != null ? !userRoot.equals(dsUser.userRoot) : dsUser.userRoot != null) return false;
-        if (id != null ? !id.equals(dsUser.id) : dsUser.id != null) return false;
-        if (email != null ? !email.equals(dsUser.email) : dsUser.email != null) return false;
-        if (displayName != null ? !displayName.equals(dsUser.displayName) : dsUser.displayName != null) return false;
-        if (userRoles != null ? !userRoles.equals(dsUser.userRoles) : dsUser.userRoles != null) return false;
-        if (active != null ? !active.equals(dsUser.active) : dsUser.active != null) return false;
-        return !(lastChangeDate != null ? !lastChangeDate.equals(dsUser.lastChangeDate) : dsUser.lastChangeDate != null);
+        if (userRoot != null ? !userRoot.equals(user.userRoot) : user.userRoot != null) return false;
+        if (id != null ? !id.equals(user.id) : user.id != null) return false;
+        if (email != null ? !email.equals(user.email) : user.email != null) return false;
+        if (displayName != null ? !displayName.equals(user.displayName) : user.displayName != null) return false;
+        if (userRoles != null ? !userRoles.equals(user.userRoles) : user.userRoles != null) return false;
+        if (active != null ? !active.equals(user.active) : user.active != null) return false;
+        return !(lastChangeDate != null ? !lastChangeDate.equals(user.lastChangeDate) : user.lastChangeDate != null);
 
     }
 

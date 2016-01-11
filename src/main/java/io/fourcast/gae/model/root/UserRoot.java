@@ -10,9 +10,9 @@ import java.io.Serializable;
  */
 @SuppressWarnings("serial")
 @Entity
-public class DSUserRoot extends GenericRoot implements Serializable {
+public class UserRoot extends DSEntryRoot implements Serializable {
     @SuppressWarnings("nls")
-    public final static String ID = "DS_USER_ROOT";
+    public final static String ID = "USER_ROOT";
 
     @Id
     String id = ID;

@@ -11,14 +11,14 @@ import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.api.services.admin.directory.Directory;
 import com.google.appengine.api.oauth.OAuthRequestException;
-import com.google.appengine.api.users.User;
 
 import io.fourcast.gae.dao.UserDao;
 import io.fourcast.gae.manager.AuthManager;
 import io.fourcast.gae.manager.UserManager;
 import io.fourcast.gae.manager.service.GoogleDirectoryService;
-import io.fourcast.gae.model.user.DSUser;
+import io.fourcast.gae.model.user.User;
 import io.fourcast.gae.util.Globals;
+import io.fourcast.gae.util.ServiceConstants;
 
 
 /**
@@ -42,11 +42,11 @@ public class UserService extends AbstractService {
     private static UserDao userDao = new UserDao();
 
     @ApiMethod(name = "userDetails")
-    public DSUser getUserDetails(User user) throws IOException,  OAuthRequestException, UnauthorizedException {
+    public User getUserDetails(com.google.appengine.api.users.User user) throws Exception {
         //only validate login, no roles
         user = AuthManager.validateUser(user);
 
-        DSUser dsUser = userDao.getUserByEmail(user.getEmail());
+        User dsUser = userDao.getUserByEmail(user.getEmail());
 
         //found in cache. now check if it's expired
         if (dsUser != null) {
@@ -69,17 +69,17 @@ public class UserService extends AbstractService {
     }
 
     @ApiMethod(name = "allUsers")
-    public List<DSUser> getAllUsers(User user) throws OAuthRequestException, UnauthorizedException {
+    public List<User> getAllUsers(com.google.appengine.api.users.User user) throws OAuthRequestException, UnauthorizedException {
         user = validateUserAccess(user);
-        List<DSUser> users = userDao.getAllUsers();
+        List<User> users = userDao.getAllUsers();
         return users;
     }
 
     @ApiMethod(name = "allUsersForRole")
-    public List<DSUser> getAllUsersForRole(User user, @Named("role")Globals.USER_ROLE role) throws OAuthRequestException, UnauthorizedException {
+    public List<User> getAllUsersForRole(com.google.appengine.api.users.User user, @Named("role")Globals.USER_ROLE role) throws OAuthRequestException, UnauthorizedException {
         //get all users users. depending on boolean, only the ones for the same user's brand.
         user = validateUserAccess(user);
-        List<DSUser> users = userDao.getAllUsersWithRole(role);
+        List<User> users = userDao.getAllUsersWithRole(role);
         Collections.sort(users);
         return users;
     }

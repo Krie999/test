@@ -4,8 +4,8 @@ import com.google.common.base.Preconditions;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.VoidWork;
 import com.googlecode.objectify.Work;
-import io.fourcast.gae.model.root.DSUserRoot;
-import io.fourcast.gae.model.user.DSUser;
+import io.fourcast.gae.model.root.UserRoot;
+import io.fourcast.gae.model.user.User;
 import io.fourcast.gae.util.Globals;
 
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * Created by nielsbuekers on 03/08/15.
  */
-public class UserDao extends AbstractDao<DSUser>{
+public class UserDao extends AbstractDao<User>{
 
     /**
      *
@@ -24,18 +24,18 @@ public class UserDao extends AbstractDao<DSUser>{
      *
      * Since from everywhere, we need the userkey, make this public / static. Otherwise we always instantiate new UserDao's
      */
-    public static Key<DSUser> DSUserKey(String userId){
-        Key<DSUserRoot> rootKey = Key.create(DSUserRoot.class,DSUserRoot.ID);
-        return Key.create(rootKey,DSUser.class,userId);
+    public static Key<User> dsUserKey(String userId){
+        Key<UserRoot> rootKey = Key.create(UserRoot.class, UserRoot.ID);
+        return Key.create(rootKey,User.class,userId);
     }
 
     public void deleteAllUsers(){
         ofy().transact(new VoidWork() {
             @Override
             public void vrun() {
-                List<Key<DSUser>> userKeys = ofy()
+                List<Key<User>> userKeys = ofy()
                         .load()
-                        .type(DSUser.class)
+                        .type(User.class)
                         .ancestor(ancestor())
                         .keys()
                         .list();
@@ -44,32 +44,32 @@ public class UserDao extends AbstractDao<DSUser>{
         });
     }
 
-    public DSUser getUser(String userId) {
+    public User getUser(String userId) {
         Preconditions.checkNotNull(userId, "userId cannot be NULL");
-        Key<DSUser> k = createKey(userId);
+        Key<User> k = createKey(userId);
         return ofy().load().key(k).now();
     }
 
-    public List<DSUser> getAllUsers() {
+    public List<User> getAllUsers() {
         return ofy()
                 .load()
-                .type(DSUser.class)
+                .type(User.class)
                 .ancestor(ancestor())
                 .list();
     }
 
-    public DSUser getUserByEmail(String userEmail) {
+    public User getUserByEmail(String userEmail) {
         Preconditions.checkNotNull(userEmail, "userEmail cannot be NULL");
         return ofy()
                 .load()
-                .type(DSUser.class)
+                .type(User.class)
                 .filter("email", userEmail)
                 .ancestor(ancestor())
                 .first()
                 .now();
     }
 
-    public String saveUser(final DSUser user){
+    public String saveUser(final User user)throws Exception{
         validate(user);
 
         return ofy().transact(new Work<String>() {
@@ -83,21 +83,21 @@ public class UserDao extends AbstractDao<DSUser>{
         });
     }
 
-    public List<DSUser> saveUsers(final List<DSUser> remoteUsers){
+    public List<User> saveUsers(final List<User> remoteUsers) throws Exception{
 
-        for(DSUser user : remoteUsers){
+        for(User user : remoteUsers){
             validate(user);
             user.setUserRoot(ancestor());
         }
 
-        return ofy().transact(new Work<List<DSUser>>() {
+        return ofy().transact(new Work<List<User>>() {
 
             @Override
-            public List<DSUser> run() {
+            public List<User> run() {
 
-                Map<Key<DSUser>, DSUser> userKeys = ofy().save().entities(remoteUsers).now();
-                List<DSUser> users = new ArrayList<DSUser>();
-                for(Key<DSUser> stored : userKeys.keySet()){
+                Map<Key<User>, User> userKeys = ofy().save().entities(remoteUsers).now();
+                List<User> users = new ArrayList<User>();
+                for(Key<User> stored : userKeys.keySet()){
                     users.add(userKeys.get(stored));
                 }
                 return users;
@@ -107,14 +107,14 @@ public class UserDao extends AbstractDao<DSUser>{
 
 
 
-    public List<DSUser> getAllUsersWithRole(Globals.USER_ROLE role) {
-        return ofy().load().type(DSUser.class).filter("userRoles",role).list();
+    public List<User> getAllUsersWithRole(Globals.USER_ROLE role) {
+        return ofy().load().type(User.class).filter("userRoles",role).list();
     }
 
 
     @Override
-    public Key<DSUserRoot> ancestor() {
-        return Key.create(DSUserRoot.class,DSUserRoot.ID);
+    public Key<UserRoot> ancestor() {
+        return Key.create(UserRoot.class, UserRoot.ID);
     }
 
 }

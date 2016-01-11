@@ -1,8 +1,9 @@
 package io.fourcast.gae.service.dto;
 
-import io.fourcast.gae.model.user.DSUser;
+import io.fourcast.gae.model.user.User;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by nielsbuekers on 13/08/15.
@@ -17,7 +18,9 @@ public class ProjectDTO {
     private Date creationDate;
     private String projectName;
     private Long departmentId;
-    private DSUser owner;
+    private User owner;
+    private List<Long> subProjectIds;
+
 
     public Long getId() {
         return id;
@@ -59,11 +62,11 @@ public class ProjectDTO {
         this.projectName = projectName;
     }
 
-    public DSUser getOwner() {
+    public User getOwner() {
         return owner;
     }
 
-    public void setOwner(DSUser owner) {
+    public void setOwner(User owner) {
         this.owner = owner;
     }
 
@@ -83,13 +86,30 @@ public class ProjectDTO {
         this.parentProjectCode = parentProjectCode;
     }
 
+    public List<Long> getSubProjectIds() {
+        return subProjectIds;
+    }
+
+    public void setSubProjectIds(List<Long> subProjectIds) {
+        this.subProjectIds = subProjectIds;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ProjectDTO)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
         ProjectDTO that = (ProjectDTO) o;
 
+        if (active != null ? !active.equals(that.active) : that.active != null) return false;
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (parentId != null ? !parentId.equals(that.parentId) : that.parentId != null) return false;
         if (parentProjectCode != null ? !parentProjectCode.equals(that.parentProjectCode) : that.parentProjectCode != null)
@@ -98,13 +118,15 @@ public class ProjectDTO {
         if (creationDate != null ? !creationDate.equals(that.creationDate) : that.creationDate != null) return false;
         if (projectName != null ? !projectName.equals(that.projectName) : that.projectName != null) return false;
         if (departmentId != null ? !departmentId.equals(that.departmentId) : that.departmentId != null) return false;
-        return !(owner != null ? !owner.equals(that.owner) : that.owner != null);
+        if (owner != null ? !owner.equals(that.owner) : that.owner != null) return false;
+        return !(subProjectIds != null ? !subProjectIds.equals(that.subProjectIds) : that.subProjectIds != null);
 
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
+        int result = active != null ? active.hashCode() : 0;
+        result = 31 * result + (id != null ? id.hashCode() : 0);
         result = 31 * result + (parentId != null ? parentId.hashCode() : 0);
         result = 31 * result + (parentProjectCode != null ? parentProjectCode.hashCode() : 0);
         result = 31 * result + (lastModified != null ? lastModified.hashCode() : 0);
@@ -112,6 +134,7 @@ public class ProjectDTO {
         result = 31 * result + (projectName != null ? projectName.hashCode() : 0);
         result = 31 * result + (departmentId != null ? departmentId.hashCode() : 0);
         result = 31 * result + (owner != null ? owner.hashCode() : 0);
+        result = 31 * result + (subProjectIds != null ? subProjectIds.hashCode() : 0);
         return result;
     }
 }

@@ -99,4 +99,49 @@ public class DSEntry implements Serializable {
         this.active = active;
     }
 
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DSEntry dsEntry = (DSEntry) o;
+
+        if (id != null ? !id.equals(dsEntry.id) : dsEntry.id != null) return false;
+        if (rootDSEntry != null ? !rootDSEntry.equals(dsEntry.rootDSEntry) : dsEntry.rootDSEntry != null) return false;
+        if (parentId != null ? !parentId.equals(dsEntry.parentId) : dsEntry.parentId != null) return false;
+        if (creationDate != null ? !creationDate.equals(dsEntry.creationDate) : dsEntry.creationDate != null)
+            return false;
+        if (lastModified != null ? !lastModified.equals(dsEntry.lastModified) : dsEntry.lastModified != null)
+            return false;
+        return !(active != null ? !active.equals(dsEntry.active) : dsEntry.active != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (rootDSEntry != null ? rootDSEntry.hashCode() : 0);
+        result = 31 * result + (parentId != null ? parentId.hashCode() : 0);
+        result = 31 * result + (creationDate != null ? creationDate.hashCode() : 0);
+        result = 31 * result + (lastModified != null ? lastModified.hashCode() : 0);
+        result = 31 * result + (active != null ? active.hashCode() : 0);
+        return result;
+    }
+
+    public boolean equalsIgnoreModifDateAndRootProject(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DSEntry dsEntry = (DSEntry) o;
+
+        if (id != null ? !id.equals(dsEntry.id) : dsEntry.id != null) return false;
+        if (parentId != null ? !parentId.equals(dsEntry.parentId) : dsEntry.parentId != null) return false;
+        if (creationDate != null ? !creationDate.equals(dsEntry.creationDate) : dsEntry.creationDate != null)
+            return false;
+        return !(active != null ? !active.equals(dsEntry.active) : dsEntry.active != null);
+    }
 }
