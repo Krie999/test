@@ -15,11 +15,11 @@ public class Globals {
     //common role for all users --> for actions not related to app, only login purposes
     public static final String GAPPS_ROLE_USER = "ROLE_USER";
     //todo only need one of these 2?
-    public static final String GAPPS_GROUP_ALL = "dev_allusers@fourcast.io";
+    public static final String GAPPS_GROUP_ALL = "zz_dev_users@fourcast.io";
 
     //user roles - match Google Groups
-    public static final String GAPPS_GROUP_PROJECTOWNER = "dev_projectowner@fourcast.io";
-    public static final String GAPPS_GROUP_ADMIN = "dev_admin@fourcast.io";
+    public static final String GAPPS_GROUP_PROJECTOWNER = "zz_dev_crud@fourcast.io";
+    public static final String GAPPS_GROUP_ADMIN = "zz_dev_admin@fourcast.io";
 
 
     public static final long MAX_USER_DS_AGE = 60 * 60 * 1000; //1 hour in milliseconds

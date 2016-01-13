@@ -1,17 +1,11 @@
 package io.fourcast.gae.service;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.api.services.admin.directory.Directory;
 import com.google.appengine.api.oauth.OAuthRequestException;
-
 import io.fourcast.gae.dao.UserDao;
 import io.fourcast.gae.manager.AuthManager;
 import io.fourcast.gae.manager.UserManager;
@@ -19,6 +13,10 @@ import io.fourcast.gae.manager.service.GoogleDirectoryService;
 import io.fourcast.gae.model.user.User;
 import io.fourcast.gae.util.Globals;
 import io.fourcast.gae.util.ServiceConstants;
+
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 
 /**
