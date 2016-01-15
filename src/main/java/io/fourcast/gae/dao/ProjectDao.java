@@ -42,9 +42,10 @@ public class ProjectDao extends AbstractDao<Project> {
      */
     public Project saveProject(final Project project) throws ConstraintViolationsException, FCTimestampConflictException, FCServerException, FCUserException {
         validate(project);
+        Project savedProject = null;
         try {
             //return the project once the TXN has finished
-            return ofy().transact(new Work<Project>() {
+            savedProject = ofy().transact(new Work<Project>() {
                 @Override
                 public Project run() {
                     try {
@@ -88,9 +89,8 @@ public class ProjectDao extends AbstractDao<Project> {
             } else if (cause instanceof FCServerException) {
                 throw (FCServerException) cause;
             }
-            //not one of ours (like NPE)
-            throw re;
         }
+        return savedProject;
     }
 
     /**
