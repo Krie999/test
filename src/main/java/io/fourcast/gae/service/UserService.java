@@ -4,15 +4,14 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.api.services.admin.directory.Directory;
-import com.google.appengine.api.oauth.OAuthRequestException;
 import io.fourcast.gae.dao.UserDao;
-import io.fourcast.gae.manager.AuthManager;
 import io.fourcast.gae.manager.UserManager;
-import io.fourcast.gae.manager.service.GoogleDirectoryService;
 import io.fourcast.gae.model.user.User;
 import io.fourcast.gae.util.Globals;
 import io.fourcast.gae.util.ServiceConstants;
+import io.fourcast.gae.util.exceptions.ConstraintViolationsException;
+import io.fourcast.gae.util.exceptions.FCServerException;
+import io.fourcast.gae.util.exceptions.FCUserException;
 
 import java.util.Collections;
 import java.util.Date;
@@ -31,68 +30,96 @@ import java.util.List;
                 ServiceConstants.WEB_CLIENT_ID_DEV,
                 ServiceConstants.WEB_CLIENT_ID_QA,
                 ServiceConstants.WEB_CLIENT_ID_PROD,
-                com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID}
+                com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID}//when going live, remove this client id!
 )
 public class UserService extends AbstractService {
 
-    private Directory directoryService;
     private static UserManager userMgr = new UserManager();
     private static UserDao userDao = new UserDao();
 
-    @ApiMethod(name = "userDetails")
-    public User getUserDetails(com.google.appengine.api.users.User user) throws Exception {
-        //only validate login, no roles
-        user = AuthManager.validateUser(user);
+    /**
+     *
+     * @param user the Cloud Endpoints authorized user (OAuth2.0 Google Account)
+     * @return the domain user behind the email address that was logged in
+     * @throws UnauthorizedException when a user tries to access the service w/o having proper access
+     * @throws FCServerException
+     * @throws ConstraintViolationsException there is a logical error in the data
+     */
+    @ApiMethod(name = "user")
+    public User getUser(com.google.appengine.api.users.User user) throws UnauthorizedException, FCServerException, FCUserException {
+        user = validateUser(user);
 
         User dsUser = userDao.getUserByEmail(user.getEmail());
 
-        //found in cache. now check if it's expired
+        //user found in cache. now check if it's expired
         if (dsUser != null) {
             long now = new Date().getTime();
             if (now - dsUser.getLastChangeDate().getTime() > Globals.MAX_USER_DS_AGE) {
                 //we won't lose the ID of the DS object since it's always the Google Apps ID,
-                //so we can recreate the same Key.
+                //so we can recreate the same Key manually.
                 log.warning("cache for user " + dsUser.getEmail() + "expired");
                 dsUser = null;
             }
         }
 
-        //null if expired or if not found in DS
+        //null if expired (set to null above) or not found in DS
         if (dsUser == null) {
-
             dsUser = userMgr.getRemoteUserDetails(user.getEmail());
-            userDao.saveUser(dsUser);
+            try {
+                userDao.saveUser(dsUser);
+            } catch (ConstraintViolationsException e) {
+                log.warning(e.getLocalizedMessage());
+                throw new FCUserException("Can't save the retrieved user.",e.getLocalizedMessage());
+            }
         }
+
         return dsUser;
     }
 
+    /**
+     * List all users
+     * @param user the OAuth user
+     * @return all users in the application
+     * @throws UnauthorizedException when a user tries to access the service w/o having proper access
+     */
     @ApiMethod(name = "allUsers")
-    public List<User> getAllUsers(com.google.appengine.api.users.User user) throws OAuthRequestException, UnauthorizedException {
-        user = validateUserAccess(user);
+    public List<User> getAllUsers(com.google.appengine.api.users.User user) throws  UnauthorizedException {
+        user = validateUser(user);
         List<User> users = userDao.getAllUsers();
         return users;
     }
 
+    /**
+     * List all users for a given role
+     * @param user the OAuth user
+     * @param role the role for which the users need to be listed
+     * @return the users matching the role
+     * @throws UnauthorizedException when a user tries to access the service w/o having proper access
+     */
     @ApiMethod(name = "allUsersForRole")
-    public List<User> getAllUsersForRole(com.google.appengine.api.users.User user, @Named("role")Globals.USER_ROLE role) throws OAuthRequestException, UnauthorizedException {
-        //get all users users. depending on boolean, only the ones for the same user's brand.
-        user = validateUserAccess(user);
+    public List<User> getAllUsersForRole(com.google.appengine.api.users.User user, @Named("role") Globals.USER_ROLE role) throws  UnauthorizedException {
+        //get all users with role
+        user = validateUser(user);
         List<User> users = userDao.getAllUsersWithRole(role);
         Collections.sort(users);
         return users;
     }
 
-
-    @SuppressWarnings("unused")
-	private Directory getDirectoryService() {
-        if (directoryService == null) {
-            directoryService = GoogleDirectoryService.getDirectoryService();
-        }
-        return directoryService;
+    /**
+     * Anyone can read
+     * @return
+     */
+    @Override
+    protected Globals.USER_ROLE requiredReadRole() {
+        return Globals.USER_ROLE.ROLE_USER;
     }
 
+    /**
+     * no write operations should be performed
+     * @return
+     */
     @Override
-    protected Globals.USER_ROLE requiredRole() {
-        return Globals.USER_ROLE.ROLE_USER;
+    protected Globals.USER_ROLE requiredWriteRole() {
+        return null;
     }
 }

@@ -24,7 +24,7 @@ public class GoogleDirectoryService extends AbstractGoogleService {
             scope.add(DirectoryScopes.ADMIN_DIRECTORY_GROUP_READONLY);
             scope.add(DirectoryScopes.ADMIN_DIRECTORY_USER_READONLY);
 
-            GoogleCredential credentials = null;
+            GoogleCredential credentials;
             try {
                 credentials = getCredentialsForScope(scope, true);
             } catch (Exception e) {

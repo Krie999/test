@@ -7,6 +7,7 @@ import com.googlecode.objectify.Work;
 import io.fourcast.gae.model.root.UserRoot;
 import io.fourcast.gae.model.user.User;
 import io.fourcast.gae.util.Globals;
+import io.fourcast.gae.util.exceptions.ConstraintViolationsException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +70,7 @@ public class UserDao extends AbstractDao<User>{
                 .now();
     }
 
-    public String saveUser(final User user)throws Exception{
+    public String saveUser(final User user) throws ConstraintViolationsException {
         validate(user);
 
         return ofy().transact(new Work<String>() {

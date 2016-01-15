@@ -10,7 +10,13 @@ import java.util.Map;
 public class Globals {
 
     /**
-     * USER *
+     * AUTH
+     */
+    public static final String LOCAL_DEV_USER = "dev";
+    public static final String ALLOWED_DOMAIN = "fourcast.io";
+
+    /**
+     * USER
      */
     //common role for all users --> for actions not related to app, only login purposes
     public static final String GAPPS_ROLE_USER = "ROLE_USER";
@@ -28,8 +34,6 @@ public class Globals {
     public static final SimpleDateFormat DATE_FORMAT_WITH_TIME = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy");
 
-    //AuthManager
-    public static final String LOCAL_DEV_USER = "dev";
 
     public enum USER_ROLE {
         ROLE_USER(GAPPS_ROLE_USER), //can login into the application

@@ -19,25 +19,59 @@ public abstract class AbstractService {
 
     final Logger log = Logger.getLogger(AbstractService.class.getName());
 
-    //the required role for the specific service
-    protected abstract Globals.USER_ROLE requiredRole();
+    /**
+     * The role required to read from the implementing service.
+     *
+     * @return The ADMIN role
+     */
+    protected abstract Globals.USER_ROLE requiredReadRole();
 
-    // return needed for dev so that we don't get stuck with example@exmaple.com
-    // but can lists.listService.js with dev@bnpparibasfortis.com
-    User validateUserAccess(User user) throws OAuthRequestException, UnauthorizedException {
+    /**
+     * The role required to write from the implementing service.
+     *
+     * @return The ADMIN role
+     */
+    protected abstract Globals.USER_ROLE requiredWriteRole();
 
-        //check that the user is logged in + on BNP domain
-        user = AuthManager.validateUser(user);
 
-        //check his roles --> uses the uSerService getUserDetails to get the roles
-        boolean hasPermissions = AuthManager.validateUserAccess(user, requiredRole());
+    /**
+     * Validates if the user has access to the application and for the role determined by the implementation method
+     * of requiredReadRole().
+     * @param user the OAuth user for which access and role has to be validated
+     * @return the domain user in case he has access
+     * @throws OAuthRequestException
+     * @throws UnauthorizedException
+     */
+    User validateUser(User user,boolean needsWrite) throws UnauthorizedException {
+
+        // check that the user is logged in and on the correct domain
+        user = AuthManager.validateUserLogin(user);
+        Globals.USER_ROLE requiredRole = needsWrite? requiredWriteRole(): requiredReadRole();
+
+        boolean hasPermissions = AuthManager.validateUserRole(user,requiredRole);
+
         if (!hasPermissions) {
-            throw new UnauthorizedException("You don't have sufficient permissions");
+            throw new UnauthorizedException("You don't have sufficient permissions. Required role is " + requiredRole);
         }
         return user;
     }
 
     /**
+     * similar as above, defaults to only needs read access
+     * @param user
+     * @return
+     * @throws UnauthorizedException
+     */
+    User validateUser(User user) throws  UnauthorizedException{
+        return validateUser(user,false);
+    }
+
+
+
+    /**
+     *
+     * TODO implement memcache?
+     *
      * Get the memcacheService
      */
     protected MemcacheService mc() {

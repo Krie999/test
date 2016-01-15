@@ -7,6 +7,7 @@ import com.googlecode.objectify.Work;
 import io.fourcast.gae.model.project.Project;
 import io.fourcast.gae.model.root.ProjectRoot;
 import io.fourcast.gae.model.user.User;
+import io.fourcast.gae.util.exceptions.ConstraintViolationsException;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class ProjectDao extends AbstractDao<Project> {
     }
 
 
-    public Project saveProject(final Project project) throws Exception {
+    public Project saveProject(final Project project) throws ConstraintViolationsException {
         validate(project);
         Project savedProject;
 

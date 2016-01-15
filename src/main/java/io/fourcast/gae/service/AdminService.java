@@ -3,7 +3,6 @@ package io.fourcast.gae.service;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.services.admin.directory.model.Member;
-import io.fourcast.gae.dao.ProjectDao;
 import io.fourcast.gae.dao.UserDao;
 import io.fourcast.gae.manager.UserManager;
 import io.fourcast.gae.model.user.User;
@@ -21,21 +20,26 @@ import java.util.List;
         version = "v0.0.1",
         description = "Service to handle Admin Ops",
         clientIds = {
-                com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID}
+                com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID}//when going live, remove this client id!
 )
 public class AdminService extends AbstractService {
 
     private UserDao userDao = new UserDao();
-	private ProjectDao projectDao = new ProjectDao();
-
     private UserManager userManager = new UserManager();
 
     private static final String CONFIRM_CODE = "ja ik ben zeker";
     private static final String CONFIRM_ERROR = "nieje joenge. nieje.";
 
+    /**
+     * Ping for Google Cloud Dashboard
+     *
+     * @return pong message
+     */
     @ApiMethod(name = "ping")
-    public void Ping(){
-        return;
+    public String Ping() {
+        String resp = "pong";
+        log.info(resp);
+        return resp;
     }
 
 
@@ -49,7 +53,8 @@ public class AdminService extends AbstractService {
      */
     @ApiMethod(name = "loadAllUnknownUsers")
     public List<User> loadAllUnknownUsers(com.google.appengine.api.users.User user) throws Exception {
-        user = validateUserAccess(user);
+
+        validateUser(user, false);
         //get all members from the groups
         List<Member> allMembers = userManager.getGroupMembersForGroup(Globals.GAPPS_GROUP_ALL);
         List<String> emailsToLoad = new ArrayList<>();
@@ -70,7 +75,7 @@ public class AdminService extends AbstractService {
             User remoteUser = userManager.getRemoteUserDetails(emailtoLoad);
             remoteUsers.add(remoteUser);
             count++;
-            if(count % 100 == 0){
+            if (count % 100 == 0) {
                 List<User> saved = userDao.saveUsers(remoteUsers);
                 savedUsers.addAll(saved);
                 remoteUsers.clear();
@@ -78,7 +83,7 @@ public class AdminService extends AbstractService {
             }
         }
         //save last batch < 100
-        if(remoteUsers.size() > 0){
+        if (remoteUsers.size() > 0) {
             List<User> saved = userDao.saveUsers(remoteUsers);
             savedUsers.addAll(saved);
         }
@@ -86,8 +91,19 @@ public class AdminService extends AbstractService {
         return savedUsers;
     }
 
+    /**
+     * The role required to read from this service.
+     *
+     * @return The ADMIN role
+     */
     @Override
-    protected Globals.USER_ROLE requiredRole() {
-        return Globals.USER_ROLE.ROLE_ADMIN;
-    }
+    protected Globals.USER_ROLE requiredReadRole() {return Globals.USER_ROLE.ROLE_ADMIN;}
+
+    /**
+     * The role required to read from this service.
+     *
+     * @return The ADMIN role
+     */
+    @Override
+    protected Globals.USER_ROLE requiredWriteRole() {return Globals.USER_ROLE.ROLE_ADMIN;}
 }

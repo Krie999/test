@@ -8,14 +8,13 @@ import com.google.api.services.admin.directory.model.Members;
 import io.fourcast.gae.manager.service.GoogleDirectoryService;
 import io.fourcast.gae.model.user.User;
 import io.fourcast.gae.util.Globals;
+import io.fourcast.gae.util.exceptions.FCServerException;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
 
-/**
- * Created by nielsbuekers on 03/08/15.
- */
+
 public class UserManager {
 
     final Logger log = Logger.getLogger(UserManager.class.getName());
@@ -30,52 +29,69 @@ public class UserManager {
      *
      * @param userEmail the email for the user which to get the full details
      * @return the User object, with it's email address and display name
-     * @throws IOException        when the user's profile can't be read.
+     * @throws IOException when the user's profile can't be read.
      */
-    public User getRemoteUserDetails(String userEmail) throws Exception {
-        //get email for id
-        Directory.Users.Get userRequest = getDirectoryService().users().get(userEmail);
-        com.google.api.services.admin.directory.model.User user;
+    public User getRemoteUserDetails(String userEmail) throws FCServerException {
+
+        com.google.api.services.admin.directory.model.User directoryUser;
+
         try {
-            user = userRequest.execute();
+            directoryUser = getDirectoryService().users().get(userEmail).execute();
         } catch (GoogleJsonResponseException e) {
-            log.severe("Error getting user <<" + userEmail + ">>");
-            throw new Exception(e.getDetails().getMessage());
+            e.printStackTrace();
+            throw new FCServerException("Error parsing remote user details.",e.getDetails().getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new FCServerException("Error getting remote user details.",e.getLocalizedMessage());
         }
 
-        User dsUser = new User();
-        dsUser.setActive(!user.getSuspended());
-        dsUser.setId(user.getId());
-        dsUser.setEmail(user.getPrimaryEmail());
-        dsUser.setDisplayName(user.getName().getFullName());
-
-        //set brand based on Department in Google Apps User Account
-        if (user.getOrganizations() != null) {
-            @SuppressWarnings("unchecked")
-            List<ArrayMap<Object, Object>> userOrganizations =
-                    (List<ArrayMap<Object, Object>>) user.getOrganizations();
-            parseUserOrgForUser(userOrganizations.get(0), dsUser);
-        } else {
-           //set default org values
-        }
+        User dsUser = dsUserFromDirectoryUser(directoryUser);
 
         //fill his roles
-        validateUserRoles(dsUser);
+        fetchAndUpdateUserRoles(dsUser);
 
         return dsUser;
     }
 
-    private void parseUserOrgForUser(ArrayMap<Object, Object> org, User user) {
+    /**
+     * Creates a domain user for the given directory user
+     * @param directoryUser the directory user to start with
+     * @return the domain user created based on the directory user
+     */
+    private User dsUserFromDirectoryUser(com.google.api.services.admin.directory.model.User directoryUser) {
+        User dsUser = new User();
+        dsUser.setActive(!directoryUser.getSuspended());
+        dsUser.setId(directoryUser.getId());
+        dsUser.setEmail(directoryUser.getPrimaryEmail());
+        dsUser.setDisplayName(directoryUser.getName().getFullName());
 
-        //set values from org unit to user as needed
+        //set brand based on Department in Google Apps User Account
+        if (directoryUser.getOrganizations() != null) {
+            @SuppressWarnings("unchecked")
+            List<ArrayMap<Object, Object>> userOrganizations =
+                    (List<ArrayMap<Object, Object>>) directoryUser.getOrganizations();
+            parseUserOrgForUser(userOrganizations.get(0), dsUser);
+        } else {
+            //set default org values
+        }
+        return dsUser;
     }
 
     /**
-     * @param user the user for which to validate the roles. Removes all roles and checks with Google Groups
-     *                which roles to add.
-     * @throws IOException        when the Google Groups can't be read
+     * Parses additional attributes from the Gapps Directory like Org details (cost center, department...)
+     * @param org the Org to parse (google apps model, not regular admin org unit)
+     * @param user the user in which to save the parsed data
      */
-    private void validateUserRoles(User user) throws Exception {
+    private void parseUserOrgForUser(ArrayMap<Object, Object> org, User user) {
+        //set extra values from org unit to user as needed. Default none needed, depends on customer needs
+    }
+
+    /**
+     *
+     * @param user
+     * @throws FCServerException
+     */
+    private void fetchAndUpdateUserRoles(User user) throws FCServerException {
         Date now = new Date();
         if (now.getTime() - cacheTimestamp > Globals.MAX_GROUP_MEMBERSHIP__CACHE_AGE) {
             groupMemberCacheForGroup = new HashMap<>();
@@ -108,18 +124,17 @@ public class UserManager {
         }
     }
 
+    public List<Member> getGroupMembersForGroup(String groupEmail) throws FCServerException {
 
-    public boolean isUserMemberOfGroup(String userEmail, List<Member> groupMembers) throws Exception {
-        for (Member member : groupMembers) {
-            if (member.getEmail().equals(userEmail)) {
-                return true;
-            }
+        //create a list request
+        Directory.Members.List listRequest;
+        try {
+            listRequest = getDirectoryService().members().list(groupEmail);
+        } catch (IOException e) {
+            throw new FCServerException("Error creating Directory List request.", e.getLocalizedMessage());
         }
-        return false;
-    }
 
-    public List<Member> getGroupMembersForGroup(String groupEmail) throws Exception {
-        Directory.Members.List listRequest = getDirectoryService().members().list(groupEmail);
+        //as long as there is a pagination token, keep executing the request with the new token to get all results
         List<Member> members = new ArrayList<>();
         String pagetoken = null;
         do {
@@ -129,13 +144,26 @@ public class UserManager {
                 pagetoken = result.getNextPageToken();
                 members.addAll(result.getMembers());
             } catch (GoogleJsonResponseException e) {
-                throw new Exception(e.getDetails().getMessage());
+                throw new FCServerException("Error parsing list request", e.getDetails().getMessage());
+            } catch (IOException e) {
+                throw new FCServerException("Error executing list request.", e.getLocalizedMessage());
             }
-        }while(pagetoken!= null);
+        } while (pagetoken != null);
+
+
         return members;
     }
 
-    public Directory getDirectoryService() throws Exception {
+    private boolean isUserMemberOfGroup(String userEmail, List<Member> groupMembers) {
+        for (Member member : groupMembers) {
+            if (member.getEmail().equals(userEmail)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Directory getDirectoryService() {
         if (directoryService == null) {
             directoryService = GoogleDirectoryService.getDirectoryService();
         }
