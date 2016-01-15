@@ -13,6 +13,7 @@ import org.junit.BeforeClass;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 @SuppressWarnings("nls")
 public class AbstractDAOTest {
@@ -22,6 +23,8 @@ public class AbstractDAOTest {
 			new LocalDatastoreServiceTestConfig()
 					.setDefaultHighRepJobPolicyUnappliedJobPercentage(100.0f)
 					.setNoIndexAutoGen(true));
+
+	final Logger log = Logger.getLogger(AbstractDAOTest.class.getName());
 
 	private Closeable closeable;
 

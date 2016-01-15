@@ -16,17 +16,18 @@ import org.junit.Test;
 public class ProjectDaoTest extends AbstractDAOTest {
 
     private static ProjectDao projectDao = new ProjectDao();
-    private Project sampleProject;
-    private Long testProjectId ;
+    private Project testProject;
+    private Long testProjectId;
+
     @SuppressWarnings("unchecked")
     @Before
     public void setUpSampleProject() throws FCTimestampConflictException, FCServerException, ConstraintViolationsException, FCUserException {
-        sampleProject = new Project();
-        sampleProject.setActive(true);
-        sampleProject.setStatus(Project.PROJECT_STATUS.CLOSED);
-        sampleProject = projectDao.saveProject(sampleProject);
-        Assert.assertNotNull(sampleProject);
-        testProjectId = sampleProject.getId();
+        testProject = new Project();
+        testProject.setActive(true);
+        testProject.setStatus(Project.PROJECT_STATUS.CLOSED);
+        projectDao.saveProject(testProject);
+        Assert.assertNotNull(testProject.getId());
+        testProjectId = testProject.getId();
 
     }
 
@@ -36,20 +37,36 @@ public class ProjectDaoTest extends AbstractDAOTest {
     public void testSaveNewProject() throws FCTimestampConflictException, FCServerException, ConstraintViolationsException, FCUserException {
         Project project = new Project();
         Assert.assertNull(project.getId());
-        Project savedProject = projectDao.saveProject(project);
-        Assert.assertNotNull(savedProject.getId());
-        Assert.assertNotNull(savedProject.getCreationDate());
-        Assert.assertNotNull(savedProject.getLastModified());
+        projectDao.saveProject(project);
+        Assert.assertNotNull(project.getId());
+        Assert.assertNotNull(project.getCreationDate());
+        Assert.assertNotNull(project.getLastModified());
     }
 
-    /*
+
     @SuppressWarnings("unchecked")
     @Test
-    public void testSaveExistingProject() throws FCTimestampConflictException, FCServerException, ConstraintViolationsException, FCUserException {
+    public void testRetrieveExistingProject() throws FCTimestampConflictException, FCServerException, ConstraintViolationsException, FCUserException {
 
-        Assert.assertNull(project.getId());
-        Project savedProject = projectDao.saveProject(project);
-        Assert.assertEquals(project,savedProject);
+        projectDao.ofy().clear();
+        Project savedProject = projectDao.getProject(testProjectId);
+        //it should not be the same object references
+        Assert.assertNotSame(testProject,savedProject);
+        //but it should be the same objects
+        Assert.assertEquals(testProject, savedProject);
     }
-*/
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testUpdateLastModDate() throws FCTimestampConflictException, FCServerException, ConstraintViolationsException, FCUserException {
+        //clear OFY cache so that savedProject is not the EXACT same Object reference as testProject.
+        projectDao.ofy().clear();
+        Project savedProject = projectDao.getProject(testProjectId);
+        //save again to update lastModDate
+        projectDao.saveProject(savedProject);
+        Assert.assertTrue(!testProject.getLastModified().equals(savedProject.getLastModified()));
+    }
+
+
+
 }
