@@ -32,8 +32,8 @@ import java.util.logging.Logger;
 public abstract class AbstractDao<T> implements Serializable {
 
     private final static Lock lock = new ReentrantLock();
-    private static boolean objectifyInitialized = false;
-    private static ValidatorFactory VALIDATION_FACTORY;
+    private static boolean _objectifyInitialized = false;
+    private static ValidatorFactory _validationFactory;
 
     @SuppressWarnings("unchecked")
     private final Class<T> typeClass = ((Class<T>) ((ParameterizedType) getClass()
@@ -54,15 +54,16 @@ public abstract class AbstractDao<T> implements Serializable {
      * @return
      */
     public static ValidatorFactory getValidatorFactory() {
+        //if it's already initialised we don't need to lock.
+        if (_validationFactory != null) return _validationFactory;
+
         lock.lock();
         try {
-            if (VALIDATION_FACTORY == null) {
-                VALIDATION_FACTORY = Validation.byDefaultProvider().configure().buildValidatorFactory();
-            }
+            _validationFactory = Validation.byDefaultProvider().configure().buildValidatorFactory();
         } finally {
             lock.unlock();
         }
-        return VALIDATION_FACTORY;
+        return _validationFactory;
     }
 
     /**
@@ -140,13 +141,16 @@ public abstract class AbstractDao<T> implements Serializable {
      * registers all OFY Entity classes
      */
     public void registerDatastore() {
+        //no need to go into lock if all is already done
+        if (_objectifyInitialized) return;
+
         lock.lock();
         try {
-            if (!objectifyInitialized) {
+            if (!_objectifyInitialized) {
                 log.info("registering Datastore entities");
                 ObjectifyService.register(User.class);
                 ObjectifyService.register(Project.class);
-                objectifyInitialized = true;
+                _objectifyInitialized = true;
             }
         } finally {
             lock.unlock();

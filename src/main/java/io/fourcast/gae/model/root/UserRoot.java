@@ -8,16 +8,10 @@ import java.io.Serializable;
 /**
  * Created by nbuekers on 11/01/16.
  */
-@SuppressWarnings("serial")
 @Entity
-public class UserRoot extends DSEntryRoot implements Serializable {
-    @SuppressWarnings("nls")
+public class UserRoot implements Serializable {
     public final static String ID = "USER_ROOT";
 
     @Id
     String id = ID;
-
-    public String ID() {
-        return id;
-    }
 }

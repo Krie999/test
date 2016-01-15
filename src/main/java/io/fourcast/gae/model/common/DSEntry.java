@@ -17,7 +17,7 @@ public class DSEntry implements Serializable {
     @Id
     private Long id;
 
-    /* Parent is a non-existing ROOT class to ensure strong consistency */
+    /* Parent is a non-persisted ROOT class to ensure ancestor queries and thereby strong consistency */
     @Parent
     private Key<?> rootDSEntry;
 
