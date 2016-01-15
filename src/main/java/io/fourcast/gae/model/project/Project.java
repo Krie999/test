@@ -28,7 +28,11 @@ public class Project extends DSEntry implements Serializable {
      **/
     private List<Long> subProjectIds;
 
+    private PROJECT_STATUS status;
+
     private Ref<User> owner;
+
+    private String name;
 
 
     public void addSubProjectId(Long subProjectId) {
@@ -61,23 +65,45 @@ public class Project extends DSEntry implements Serializable {
         this.subProjectIds = subProjects;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public PROJECT_STATUS getStatus() {
+        return status;
+    }
+
+    public void setStatus(PROJECT_STATUS status) {
+        this.status = status;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
 
         Project project = (Project) o;
 
         if (subProjectIds != null ? !subProjectIds.equals(project.subProjectIds) : project.subProjectIds != null)
             return false;
-        return !(owner != null ? !owner.equals(project.owner) : project.owner != null);
+        if (status != project.status) return false;
+        if (owner != null ? !owner.equals(project.owner) : project.owner != null) return false;
+        return !(name != null ? !name.equals(project.name) : project.name != null);
 
     }
 
     @Override
     public int hashCode() {
-        int result = subProjectIds != null ? subProjectIds.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (subProjectIds != null ? subProjectIds.hashCode() : 0);
+        result = 31 * result + (status != null ? status.hashCode() : 0);
         result = 31 * result + (owner != null ? owner.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
         return result;
     }
 }

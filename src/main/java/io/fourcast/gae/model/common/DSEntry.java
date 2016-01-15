@@ -46,7 +46,7 @@ public class DSEntry implements Serializable {
 
     @OnSave
     void generateCreationDate() {
-        if (id == 0L) this.creationDate = new Date();
+        if (id == null) this.creationDate = new Date();
     }
 
     @ApiResourceProperty(ignored = AnnotationBoolean.TRUE)

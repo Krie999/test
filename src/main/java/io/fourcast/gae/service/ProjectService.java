@@ -15,6 +15,9 @@ import io.fourcast.gae.model.user.User;
 import io.fourcast.gae.util.Globals;
 import io.fourcast.gae.util.ServiceConstants;
 import io.fourcast.gae.util.exceptions.ConstraintViolationsException;
+import io.fourcast.gae.util.exceptions.FCServerException;
+import io.fourcast.gae.util.exceptions.FCTimestampConflictException;
+import io.fourcast.gae.util.exceptions.FCUserException;
 
 import java.util.List;
 
@@ -44,7 +47,7 @@ public class ProjectService extends AbstractService {
      * @throws UnauthorizedException if the user has no access to perform this operation
      */
     @ApiMethod(name = "saveProject", httpMethod = "post")
-    public Project saveProject(com.google.appengine.api.users.User user, Project project) throws UnauthorizedException, ConstraintViolationsException {
+    public Project saveProject(com.google.appengine.api.users.User user, Project project) throws UnauthorizedException, ConstraintViolationsException, FCTimestampConflictException, FCUserException, FCServerException {
 
         user = validateUser(user,true);
         User currentUser = userDao.getUserByEmail(user.getEmail());

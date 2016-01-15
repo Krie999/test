@@ -65,6 +65,7 @@ public class ProjectDao extends AbstractDao<Project> {
                             ofy().save().entity(parentProject);
                         }
                         return ofy().load().key(newProjectKey).now();
+
                     } catch (FCTimestampConflictException e) {
                         throw new RuntimeException(e);
                     } catch (FCUserException e) {
@@ -87,9 +88,9 @@ public class ProjectDao extends AbstractDao<Project> {
             } else if (cause instanceof FCServerException) {
                 throw (FCServerException) cause;
             }
+            //not one of ours (like NPE)
+            throw re;
         }
-        return null;
-
     }
 
     /**

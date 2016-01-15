@@ -44,6 +44,8 @@ dependencies {
 
     //validation
     compile "javax.validation:validation-api:1.1.0.Final"
+    //bean validator
+    compile "org.apache.bval:bval-jsr303:0.5"
 
 
     /* TESTING */
