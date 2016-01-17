@@ -10,6 +10,7 @@ buildscript {
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 apply plugin: 'war'
@@ -50,8 +51,10 @@ dependencies {
 
     /* TESTING */
     testCompile 'junit:junit:4.10'
+    testCompile 'com.google.appengine:appengine-api-labs:1.9.27'
     testCompile 'com.google.appengine:appengine-testing:1.9.27'
     testCompile 'com.google.appengine:appengine-api-stubs:1.9.27'
+    testCompile "org.mockito:mockito-core:1.+"
 }
 
 appengine {

@@ -34,8 +34,17 @@ import java.util.List;
 
 public class ProjectService extends AbstractService {
 
+    //TODO dependency injection for unit testing instead of fugly constructor?
     private ProjectDao projectDao = new ProjectDao();
     private UserDao userDao = new UserDao();
+
+    public ProjectService(ProjectDao projectDao,UserDao userDao) {
+        this.projectDao = projectDao;
+        this.userDao = userDao;
+    }
+
+    public ProjectService() {
+    }
 
 
     /**

@@ -42,7 +42,7 @@ public abstract class AbstractService {
      * @throws OAuthRequestException
      * @throws UnauthorizedException
      */
-    User validateUser(User user,boolean needsWrite) throws UnauthorizedException {
+    public User validateUser(User user,boolean needsWrite) throws UnauthorizedException {
 
         // check that the user is logged in and on the correct domain
         user = AuthManager.validateUserLogin(user);
@@ -62,7 +62,7 @@ public abstract class AbstractService {
      * @return
      * @throws UnauthorizedException
      */
-    User validateUser(User user) throws  UnauthorizedException{
+    public User validateUser(User user) throws  UnauthorizedException{
         return validateUser(user,false);
     }
 
