@@ -1,6 +1,5 @@
-package io.fourcast.gae.test.dao;
+package io.fourcast.gae.dao;
 
-import io.fourcast.gae.dao.ProjectDao;
 import io.fourcast.gae.model.project.Project;
 import io.fourcast.gae.util.exceptions.ConstraintViolationsException;
 import io.fourcast.gae.util.exceptions.FCServerException;

@@ -22,9 +22,9 @@ import io.fourcast.gae.util.exceptions.FCUserException;
 import java.util.List;
 
 @Api(
-        name = "smartService",
+        name = "projectService",
         version = "v0.0.1",
-        description = "Service to handle SMART DSEntry requests",
+        description = "Service to handle Project DSEntry requests",
         clientIds = {
                 ServiceConstants.WEB_CLIENT_ID_DEV,
                 ServiceConstants.WEB_CLIENT_ID_QA,

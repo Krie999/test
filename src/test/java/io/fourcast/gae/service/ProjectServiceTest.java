@@ -1,4 +1,4 @@
-package io.fourcast.gae.test.service;
+package io.fourcast.gae.service;
 
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.oauth.OAuthRequestException;
@@ -10,7 +10,6 @@ import io.fourcast.gae.dao.ProjectDao;
 import io.fourcast.gae.dao.UserDao;
 import io.fourcast.gae.model.project.Project;
 import io.fourcast.gae.model.user.User;
-import io.fourcast.gae.service.ProjectService;
 import io.fourcast.gae.util.exceptions.ConstraintViolationsException;
 import io.fourcast.gae.util.exceptions.FCServerException;
 import io.fourcast.gae.util.exceptions.FCTimestampConflictException;
@@ -54,6 +53,7 @@ public class ProjectServiceTest {
                     .setOAuthUserId(OAUTH_USER_ID)
                     .setOAuthAuthDomain(OAUTH_AUTH_DOMAIN)
                     .setOAuthIsAdmin(OAUTH_IS_ADMIN));
+
     @Before
     public void doSetup() throws UnauthorizedException, OAuthRequestException {
         helper.setUp();
@@ -62,7 +62,7 @@ public class ProjectServiceTest {
         projectService = new ProjectService(projectDao, userDao);
         spyProjectService = spy(projectService);
         doReturn(oAuthUser()).when(spyProjectService).validateUser(any(com.google.appengine.api.users.User.class));
-        doReturn(oAuthUser()).when(spyProjectService).validateUser(any(com.google.appengine.api.users.User.class),anyBoolean());
+        doReturn(oAuthUser()).when(spyProjectService).validateUser(any(com.google.appengine.api.users.User.class), anyBoolean());
 
 
         //TODO URGENT find a way to not have to deal with OFY in the service? owner-Logic should not be in Dao.. dunno!
@@ -106,13 +106,14 @@ public class ProjectServiceTest {
 
         Project p = new Project();
 
-       spyProjectService.saveProject(oAuthUser(), p);
+        spyProjectService.saveProject(oAuthUser(), p);
     }
 
     private com.google.appengine.api.users.User oAuthUser() throws OAuthRequestException {
         return OAuthServiceFactory.getOAuthService().getCurrentUser();
     }
-    private io.fourcast.gae.model.user.User testUser(){
+
+    private io.fourcast.gae.model.user.User testUser() {
         User user = new User();
         user.setId(OAUTH_USER_ID);
         user.setEmail(OAUTH_EMAIL);

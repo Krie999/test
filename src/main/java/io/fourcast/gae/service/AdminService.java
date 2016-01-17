@@ -36,10 +36,9 @@ public class AdminService extends AbstractService {
      * @return pong message
      */
     @ApiMethod(name = "ping")
-    public String Ping() {
+    public void Ping() {
         String resp = "pong";
         log.info(resp);
-        return resp;
     }
 
 
@@ -54,13 +53,15 @@ public class AdminService extends AbstractService {
     @ApiMethod(name = "loadAllUnknownUsers")
     public List<User> loadAllUnknownUsers(com.google.appengine.api.users.User user) throws Exception {
 
-        validateUser(user, false);
+        //user
+        validateUser(user, true);
         //get all members from the groups
         List<Member> allMembers = userManager.getGroupMembersForGroup(Globals.GAPPS_GROUP_ALL);
         List<String> emailsToLoad = new ArrayList<>();
 
         //for each member, check if in DS and valid
         for (Member m : allMembers) {
+            log.info(m.toString());
             User dsUser = userDao.getUserByEmail(m.getEmail());
             if (dsUser == null) {
                 emailsToLoad.add(m.getEmail());

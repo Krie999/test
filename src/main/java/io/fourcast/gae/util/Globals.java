@@ -12,7 +12,7 @@ public class Globals {
     /**
      * AUTH
      */
-    public static final String LOCAL_DEV_USER = "dev";
+    public static final String LOCAL_DEV_USER = "niels@fourcast.io";
     public static final String ALLOWED_DOMAIN = "fourcast.io";
 
     /**

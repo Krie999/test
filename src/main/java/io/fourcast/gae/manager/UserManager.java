@@ -47,7 +47,6 @@ public class UserManager {
 
         User dsUser = dsUserFromDirectoryUser(directoryUser);
 
-        //fill his roles
         fetchAndUpdateUserRoles(dsUser);
 
         return dsUser;

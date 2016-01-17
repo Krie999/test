@@ -1,4 +1,4 @@
-package io.fourcast.gae.test.dao;
+package io.fourcast.gae.dao;
 
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;

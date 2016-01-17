@@ -5,6 +5,7 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.UnauthorizedException;
 import io.fourcast.gae.dao.UserDao;
+import io.fourcast.gae.manager.AuthManager;
 import io.fourcast.gae.manager.UserManager;
 import io.fourcast.gae.model.user.User;
 import io.fourcast.gae.util.Globals;
@@ -47,7 +48,8 @@ public class UserService extends AbstractService {
      */
     @ApiMethod(name = "user")
     public User getUser(com.google.appengine.api.users.User user) throws UnauthorizedException, FCServerException, FCUserException {
-        user = validateUser(user);
+        //only login access to app, can't fetch roles since roles users this service, inifinte loop.. TODO optimize
+        user = AuthManager.validateUserLogin(user);
 
         User dsUser = userDao.getUserByEmail(user.getEmail());
 

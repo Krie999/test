@@ -1,11 +1,7 @@
 /*if deploying to dev, copy paste this in config.json. DONT FORGET TO UPDATE JS CLIENT ID*/
 {
-  "serviceAccountEmail": "1034209464045-uplone4nhp4q4iaa9uafnu574tro2vse@developer.gserviceaccount.com",
+  "serviceAccountEmail": "fc-gae-sa@fc-gae.iam.gserviceaccount.com",
   "serviceAccountPK12FilePath": "/keys/dev.p12",
-  "appengineAppName": "bnppf-e2e-planning-tool-dev",
-  "domainAdmin":"niels.buekers@bnpparibasfortis.com",
-  "templateGeneratorURL" : "https://script.google.com/a/macros/bnpparibasfortis.com/s/AKfycbxQTvR8AYkFky61W9sX2fW9faSZmOi0QQpYpJghmT5BHuzPaRs/exec",
-  "cocamatReportTemplateId" : "1QwlZ9_IsNQlPOX3ST92roM9IMDbZA7CTPkPmi81RgmQ",
-  "spaceReportTemplateId" : "17_FRqujCrMOH-H4i37yPJkeHgYvjixAjAf5UzlnZYgg",
-  "reportingBucketId" : "bnppf-e2e-planning-tool-dev"
+  "appengineAppName": "fc-gae",
+  "domainAdmin":"niels@fourcast.io"
 }

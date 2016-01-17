@@ -6,17 +6,20 @@ import java.util.List;
 
 import com.google.api.server.spi.config.ApiTransformer;
 import com.googlecode.objectify.Ref;
+import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 
+import com.googlecode.objectify.annotation.Index;
 import io.fourcast.gae.model.common.DSEntry;
 import io.fourcast.gae.model.transformer.ProjectTransformer;
 import io.fourcast.gae.model.user.User;
 
 @Entity
-@SuppressWarnings("serial")
+@Cache
 @ApiTransformer(ProjectTransformer.class)
 public class Project extends DSEntry implements Serializable {
 
+    @Index
     public enum PROJECT_STATUS {
         ACTIVE,
         CLOSED,
@@ -26,10 +29,13 @@ public class Project extends DSEntry implements Serializable {
     /**
      * linked entities
      **/
+    @Index
     private List<Long> subProjectIds;
 
+    @Index
     private PROJECT_STATUS status;
 
+    @Index
     private Ref<User> owner;
 
     private String name;

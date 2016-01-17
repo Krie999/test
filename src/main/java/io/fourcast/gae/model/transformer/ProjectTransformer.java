@@ -22,6 +22,7 @@ public class ProjectTransformer extends GenericTransformer implements Transforme
         dto.setLastModified(e.getLastModified());
         dto.setActive(e.getActive());
         dto.setSubProjectIds(e.getSubProjectIds());
+        dto.setOwner(e.getOwner().get());
 
         return dto;
     }
