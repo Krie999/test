@@ -10,6 +10,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Date;
+
 /**
  * Created by nbuekers on 15/01/16.
  */
@@ -29,10 +31,19 @@ public class ProjectDaoTest extends AbstractDAOTest {
         Assert.assertNotNull(testProject.getId());
         testProjectId = testProject.getId();
 
+        //clear OFY cache so that any retrieved project is not the EXACT same Object reference as testProject.
+        projectDao.ofy().clear();
     }
 
 
-    @SuppressWarnings("unchecked")
+    /**
+     * Validate that a new project w/o ID, creationDate or lastModDate, gets these three values assigned on creation
+     *
+     * @throws Exception
+     * @throws FCServerException
+     * @throws ConstraintViolationsException
+     * @throws FCUserException
+     */
     @Test
     public void testSaveNewProject() throws FCTimestampConflictException, FCServerException, ConstraintViolationsException, FCUserException {
         Project project = new Project();
@@ -43,30 +54,49 @@ public class ProjectDaoTest extends AbstractDAOTest {
         Assert.assertNotNull(project.getLastModified());
     }
 
-
-    @SuppressWarnings("unchecked")
     @Test
     public void testRetrieveExistingProject() throws FCTimestampConflictException, FCServerException, ConstraintViolationsException, FCUserException {
-
-        projectDao.ofy().clear();
         Project savedProject = projectDao.getProject(testProjectId);
         //it should not be the same object references
-        Assert.assertNotSame(testProject,savedProject);
+        Assert.assertNotSame(testProject, savedProject);
         //but it should be the same objects
         Assert.assertEquals(testProject, savedProject);
     }
 
-    @SuppressWarnings("unchecked")
+    /**
+     * Validate that the last modified date is updated on a save
+     * @throws Exception
+     */
     @Test
     public void testUpdateLastModDate() throws FCTimestampConflictException, FCServerException, ConstraintViolationsException, FCUserException {
-        //clear OFY cache so that savedProject is not the EXACT same Object reference as testProject.
-        projectDao.ofy().clear();
+        Date beforeSaveDate = new Date();
+
         Project savedProject = projectDao.getProject(testProjectId);
+
         //save again to update lastModDate
         projectDao.saveProject(savedProject);
-        Assert.assertTrue(!testProject.getLastModified().equals(savedProject.getLastModified()));
+
+        //value must have been updated
+        Assert.assertTrue(testProject.getLastModified().getTime() != savedProject.getLastModified().getTime());
+
+        //value must be later than when we initialised the save
+        Assert.assertTrue(beforeSaveDate.getTime() < savedProject.getLastModified().getTime());
+
+        //value must be younger than 'now'
+        Assert.assertTrue(savedProject.getLastModified().getTime() < new Date().getTime());
     }
 
+    /**
+     * Validates that an exception is thrown when the timestamp in the DS is newer than the one passed in a save ops
+     */
+    @Test(expected = FCTimestampConflictException.class)
+    public void testTimestampValidation() throws FCTimestampConflictException, FCUserException, FCServerException, ConstraintViolationsException {
+        Date old = new Date(0L);
+        testProject.setLastModified(old);
+        projectDao.saveProject(testProject);
+    }
 
-
+    /**
+     * TODO muchos moros testingos
+     */
 }
