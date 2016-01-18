@@ -1,0 +1,49 @@
+{
+  "name": "fourcast-template",
+  "version": "1.0.0",
+  "description": "Template project for all GAE projects.",
+  "main": "gulp.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Fourcast/gae-template"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Fourcast/gae-template/issues"
+  },
+  "homepage": "https://github.com/Fourcast/gae-template",
+  "devDependencies": {
+    "args": "0.0.3",
+    "browser-sync": "^2.11.1",
+    "del": "^1.2.0",
+    "glob": "^6.0.4",
+    "gulp": "^3.9.0",
+    "gulp-angular-templatecache": "^1.8.0",
+    "gulp-autoprefixer": "^3.1.0",
+    "gulp-bytediff": "^1.0.0",
+    "gulp-htmlmin": "^1.3.0",
+    "gulp-if": "^2.0.0",
+    "gulp-imagemin": "^2.4.0",
+    "gulp-inject": "^3.0.0",
+    "gulp-jscs": "^3.0.2",
+    "gulp-jshint": "^2.0.0",
+    "gulp-load-plugins": "^1.2.0",
+    "gulp-order": "^1.1.1",
+    "gulp-print": "^2.0.1",
+    "gulp-sass": "^2.1.1",
+    "gulp-task-listing": "^1.0.1",
+    "gulp-util": "^3.0.7",
+    "jasmine": "^2.4.1",
+    "jshint": "^2.9.1",
+    "jshint-stylish": "^2.1.0",
+    "lodash": "^4.0.0",
+    "plato": "^1.5.0",
+    "wiredep": "^3.0.0",
+    "yargs": "^3.32.0"
+  },
+  "dependencies": {}
+}
