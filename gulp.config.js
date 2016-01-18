@@ -22,6 +22,7 @@ module.exports = function () {
     ],
     build: './build/exploded-app/',
     client: client,
+    css: temp + 'styles.css',
     fonts: bower.directory + 'font-awesome/fonts/**/*.*',
     htmlTemplates: clientApp + '**/*.html',
     images: client + 'images/**/*.*',
@@ -39,6 +40,15 @@ module.exports = function () {
     report: report,
     sass: client + 'styles/styles.scss',
     temp: temp,
+
+    /**
+     * Optimized files
+     */
+    optimized: {
+      app: 'app.js',
+      lib: 'lib.js'
+    },
+
     /**
      * Plato
      */
@@ -99,5 +109,35 @@ module.exports = function () {
     };
   };
 
+  config.karma = getKarmaOptions();
+
   return config;
+
+  ///////////////////////////////////
+
+  function getKarmaOptions() {
+    var options = {
+      files: [].concat(
+        bowerFiles,
+        config.specHelpers,
+        clientApp + '**/*.module.js',
+        clientApp + '**/*.js',
+        temp + config.templateCache.file/*,*/
+        //config.serverIntegrationSpecs
+      ),
+      exclude: [],
+      coverage: {
+        dir: report + 'coverage',
+        reporters: [
+          // reporters not supporting the `file` property
+          {type: 'html', subdir: 'report-html'},
+          {type: 'lcov', subdir: 'report-lcov'},
+          {type: 'text-summary'} //, subdir: '.', file: 'text-summary.txt'}
+        ]
+      },
+      preprocessors: {}
+    };
+    options.preprocessors[clientApp + '**/!(*.spec)+(.js)'] = ['coverage'];
+    return options;
+  }
 };
