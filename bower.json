@@ -1,5 +1,6 @@
 {
   "name": "fourcast-template",
+  "version": "0.0.1",
   "description": "Template project for all GAE projects.",
   "main": "gulp.config.js",
   "authors": [

@@ -9,6 +9,8 @@
  * TODO: Server integration specs?
  * TODO: Look into gulp-rev and rev-replace
  * TODO: Serve specs, dev and build from GAE
+ * TODO: Create separate file with description of most used gulp tasks and their use cases
+ * TODO: Bump more than just package.json and bower.json
  */
 var args = require('yargs').argv;
 var browserSync = require('browser-sync');
@@ -228,6 +230,17 @@ gulp.task('clean-code', function(done) {
 });
 
 /**
+ * Remove all files from the build, temp, and reports folders
+ * @param  {Function} done - callback when complete
+ */
+gulp.task('clean', function(done) {
+  var delconfig = [].concat(config.build, config.temp, config.report);
+  log('Cleaning: ' + $.util.colors.blue(delconfig));
+  del(delconfig, done);
+});
+
+
+/**
  * Build everything
  * This is separate so we can run tests on
  * optimize before handling image or fonts
@@ -308,6 +321,50 @@ gulp.task('test', ['vet', 'templatecache'], function(done) {
   startTests(true /*singleRun*/ , done);
 });
 
+/**
+ * Bump the version
+ * --type=pre will bump the prerelease version *.*.*-x
+ * --type=patch or no flag will bump the patch version *.*.x
+ * --type=minor will bump the minor version *.x.*
+ * --type=major will bump the major version x.*.*
+ * --version=1.2.3 will bump to a specific version and ignore other flags
+ */
+gulp.task('bump', function() {
+  var msg = 'Bumping versions';
+  var type = args.type;
+  var version = args.ver;
+  var options = {};
+  if (version) {
+    options.version = version;
+    msg += ' to ' + version;
+  } else {
+    options.type = type;
+    msg += ' for a ' + type;
+  }
+  log(msg);
+
+  return gulp
+    .src(config.packages)
+    .pipe($.print())
+    .pipe($.bump(options))
+    .pipe(gulp.dest(config.root));
+});
+
+/**
+ * Run specs and wait.
+ * Watch for file changes and re-run tests on each change
+ * To start servers and run midway specs as well:
+ *    gulp autotest --startServers
+ */
+gulp.task('autotest', function(done) {
+  startTests(false /*singleRun*/ , done);
+});
+
+
+/**
+ * Optimize the code and re-load browserSync
+ */
+gulp.task('browserSyncReload', ['optimize'], browserSync.reload);
 
 ///////////////////////////////////
 
@@ -333,6 +390,15 @@ function bytediffFormatter(data) {
 function clean(path, done) {
   log('Cleaning: ' + $.util.colors.blue(path));
   del(path, done);
+}
+
+/**
+ * When files change, log it
+ * @param  {Object} event - event that fired
+ */
+function changeEvent(event) {
+  var srcPattern = new RegExp('/.*(?=/' + config.source + ')/');
+  log('File ' + event.path.replace(srcPattern, '') + ' ' + event.type);
 }
 
 /**
@@ -406,6 +472,55 @@ function log(msg) {
   } else {
     $.util.log($.util.colors.blue(msg));
   }
+}
+
+/**
+ * Start BrowserSync
+ * --nosync will avoid browserSync
+ */
+function startBrowserSync(isDev, specRunner) {
+  if (args.nosync || browserSync.active) {
+    return;
+  }
+
+  log('Starting BrowserSync on port ' + port);
+
+  // If build: watches the files, builds, and restarts browser-sync.
+  // If dev: watches less, compiles it to css, browser-sync handles reload
+  if (isDev) {
+    gulp.watch([config.sass], ['styles'])
+      .on('change', changeEvent);
+  } else {
+    gulp.watch([config.sass, config.js, config.html], ['browserSyncReload'])
+      .on('change', changeEvent);
+  }
+
+  var options = {
+    proxy: 'localhost:' + port,
+    port: 3000,
+    files: isDev ? [
+      config.client + '**/*.*',
+      '!' + config.sass,
+      config.temp + '**/*.css'
+    ] : [],
+    ghostMode: { // these are the defaults t,f,t,t
+      clicks: true,
+      location: false,
+      forms: true,
+      scroll: true
+    },
+    injectChanges: true,
+    logFileChanges: true,
+    logLevel: 'info',
+    logPrefix: 'hottowel',
+    notify: true,
+    reloadDelay: 0 //1000
+  } ;
+  if (specRunner) {
+    options.startPath = config.specRunnerFile;
+  }
+
+  browserSync(options);
 }
 
 

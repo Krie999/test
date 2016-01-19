@@ -2,6 +2,7 @@ module.exports = function () {
   var client = './src/main/webapp/';
   var clientApp = client + 'app/';
   var report = './report/';
+  var root = './';
   var specRunnerFile = 'specs.html';
   var temp = './.tmp/';
   var wiredep = require('wiredep');
@@ -24,6 +25,7 @@ module.exports = function () {
     client: client,
     css: temp + 'styles.css',
     fonts: bower.directory + 'font-awesome/fonts/**/*.*',
+    html: client + '**/*.html',
     htmlTemplates: clientApp + '**/*.html',
     images: client + 'images/**/*.*',
     index: client + 'index.html',
@@ -38,7 +40,9 @@ module.exports = function () {
       '**/*.js'
     ],
     report: report,
+    root: root,
     sass: client + 'styles/styles.scss',
+    source: 'src/main/webapps/',
     temp: temp,
 
     /**
