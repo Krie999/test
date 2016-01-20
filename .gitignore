@@ -28,3 +28,4 @@ node_modules
 bin
 settings
 .DS_Store
+report

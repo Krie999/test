@@ -11,6 +11,8 @@
  * TODO: Serve specs, dev and build from GAE
  * TODO: Create separate file with description of most used gulp tasks and their use cases
  * TODO: Bump more than just package.json and bower.json
+ * TODO: JSCS is not being called
+ * TOOD: Compare jshint/jscs with older versions
  */
 var args = require('yargs').argv;
 var browserSync = require('browser-sync');
@@ -18,11 +20,12 @@ var config = require('./gulp.config')();
 var del = require('del');
 var glob = require('glob');
 var gulp = require('gulp');
+var path = require('path');
 var _ = require('lodash');
 var $ = require('gulp-load-plugins')({lazy: true});
 
 var colors = $.util.colors;
-var port = process.env.port || config.defaultPort;
+//var port = process.env.port || config.defaultPort;
 
 /**
  * yargs variables can be passed in to alter the behavior, when present.
@@ -235,7 +238,7 @@ gulp.task('clean-code', function(done) {
  */
 gulp.task('clean', function(done) {
   var delconfig = [].concat(config.build, config.temp, config.report);
-  log('Cleaning: ' + $.util.colors.blue(delconfig));
+  log('Cleaning: ' + colors.blue(delconfig));
   del(delconfig, done);
 });
 
@@ -374,7 +377,7 @@ gulp.task('browserSyncReload', ['optimize'], browserSync.reload);
  * @return {String}      Difference in bytes, formatted
  */
 function bytediffFormatter(data) {
-  var difference = (data.savings > 0) ? ' smaller.' : ' larger.';
+  var difference = data.savings > 0 ? ' smaller.' : ' larger.';
   return data.fileName + ' went from ' +
     (data.startSize / 1000).toFixed(2) + ' kB to ' +
     (data.endSize / 1000).toFixed(2) + ' kB and is ' +
@@ -388,7 +391,7 @@ function bytediffFormatter(data) {
  * @param  {Function} done - callback when complete
  */
 function clean(path, done) {
-  log('Cleaning: ' + $.util.colors.blue(path));
+  log('Cleaning: ' + colors.blue(path));
   del(path, done);
 }
 
@@ -396,10 +399,10 @@ function clean(path, done) {
  * When files change, log it
  * @param  {Object} event - event that fired
  */
-function changeEvent(event) {
-  var srcPattern = new RegExp('/.*(?=/' + config.source + ')/');
-  log('File ' + event.path.replace(srcPattern, '') + ' ' + event.type);
-}
+//function changeEvent(event) {
+//  var srcPattern = new RegExp('/.*(?=/' + config.source + ')/');
+//  log('File ' + event.path.replace(srcPattern, '') + ' ' + event.type);
+//}
 
 /**
  * Inject files in a sorted sequence at a specified inject label
@@ -465,12 +468,12 @@ function getHeader() {
  * Can pass in a string, object or array.
  */
 function log(msg) {
-  if (typeof(msg) === 'object') {
+  if (typeof msg === 'object') {
     for (var item in Object.keys(msg)) {
-      $.util.log($.util.colors.blue(msg[item]));
+      $.util.log(colors.blue(msg[item]));
     }
   } else {
-    $.util.log($.util.colors.blue(msg));
+    $.util.log(colors.blue(msg));
   }
 }
 
@@ -478,50 +481,50 @@ function log(msg) {
  * Start BrowserSync
  * --nosync will avoid browserSync
  */
-function startBrowserSync(isDev, specRunner) {
-  if (args.nosync || browserSync.active) {
-    return;
-  }
-
-  log('Starting BrowserSync on port ' + port);
-
-  // If build: watches the files, builds, and restarts browser-sync.
-  // If dev: watches less, compiles it to css, browser-sync handles reload
-  if (isDev) {
-    gulp.watch([config.sass], ['styles'])
-      .on('change', changeEvent);
-  } else {
-    gulp.watch([config.sass, config.js, config.html], ['browserSyncReload'])
-      .on('change', changeEvent);
-  }
-
-  var options = {
-    proxy: 'localhost:' + port,
-    port: 3000,
-    files: isDev ? [
-      config.client + '**/*.*',
-      '!' + config.sass,
-      config.temp + '**/*.css'
-    ] : [],
-    ghostMode: { // these are the defaults t,f,t,t
-      clicks: true,
-      location: false,
-      forms: true,
-      scroll: true
-    },
-    injectChanges: true,
-    logFileChanges: true,
-    logLevel: 'info',
-    logPrefix: 'hottowel',
-    notify: true,
-    reloadDelay: 0 //1000
-  } ;
-  if (specRunner) {
-    options.startPath = config.specRunnerFile;
-  }
-
-  browserSync(options);
-}
+//function startBrowserSync(isDev, specRunner) {
+//  if (args.nosync || browserSync.active) {
+//    return;
+//  }
+//
+//  log('Starting BrowserSync on port ' + port);
+//
+//  // If build: watches the files, builds, and restarts browser-sync.
+//  // If dev: watches less, compiles it to css, browser-sync handles reload
+//  if (isDev) {
+//    gulp.watch([config.sass], ['styles'])
+//      .on('change', changeEvent);
+//  } else {
+//    gulp.watch([config.sass, config.js, config.html], ['browserSyncReload'])
+//      .on('change', changeEvent);
+//  }
+//
+//  var options = {
+//    proxy: 'localhost:' + port,
+//    port: 3000,
+//    files: isDev ? [
+//      config.client + '**/*.*',
+//      '!' + config.sass,
+//      config.temp + '**/*.css'
+//    ] : [],
+//    ghostMode: { // these are the defaults t,f,t,t
+//      clicks: true,
+//      location: false,
+//      forms: true,
+//      scroll: true
+//    },
+//    injectChanges: true,
+//    logFileChanges: true,
+//    logLevel: 'info',
+//    logPrefix: 'browsersync',
+//    notify: true,
+//    reloadDelay: 0 //1000
+//  } ;
+//  if (specRunner) {
+//    options.startPath = config.specRunnerFile;
+//  }
+//
+//  browserSync(options);
+//}
 
 
 /**

@@ -1,92 +1,114 @@
-
+//TODO: Code linting for Java files
+//TODO: Hot Deploy
+//TODO: Execute full build from gradle, including browser-sync and e2e tests
+//TODO: Create separate deploy-dev, deploy-qa and deploy-prod tasks configuring the correct params
+//TODO: Run bower install on appengineUpdate
 buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.google.appengine:gradle-appengine-plugin:1.9.30'
-    }
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath 'com.google.appengine:gradle-appengine-plugin:1.9.30'
+  }
+}
+
+plugins {
+  id 'war'
+  id 'com.moowork.gulp' version '0.11'
+}
+
+defaultTasks 'clean', 'appengineRun'
+
+gulp {
+  colors = true
 }
 
 repositories {
-    mavenCentral()
-    jcenter()
+  mavenLocal()
+  mavenCentral()
+  jcenter()
 }
 
-apply plugin: 'war'
+//apply plugin: 'war'
 apply plugin: 'appengine'
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.10'
-}
-
 dependencies {
-    //Appengine
-    appengineSdk 'com.google.appengine:appengine-java-sdk:1.9.30'
-    compile 'com.google.appengine:appengine-api-1.0-sdk:1.9.30'
+  //Appengine
+  appengineSdk 'com.google.appengine:appengine-java-sdk:1.9.30'
+  compile 'com.google.appengine:appengine-api-1.0-sdk:1.9.30'
 
-    //Cloud Endpoints
-    compile 'javax.servlet:servlet-api:2.5'
-    compile 'com.google.appengine:appengine-endpoints:1.9.27'
+  //Cloud Endpoints
+  compile 'javax.servlet:servlet-api:2.5'
+  compile 'com.google.appengine:appengine-endpoints:1.9.27'
 
-    //Cloud Datastore
-    compile 'com.googlecode.objectify:objectify:5.1.5'
+  //Cloud Datastore
+  compile 'com.googlecode.objectify:objectify:5.1.5'
 
-    //Google Api Client and extensions for Appengine (generic access Google APIs --> needed for other API calls like Directory)
-    compile 'com.google.api-client:google-api-client:1.20.0'
-    compile 'com.google.api-client:google-api-client-appengine:1.20.0'
+  //Google Api Client and extensions for Appengine (generic access Google APIs --> needed for other API calls like Directory)
+  compile 'com.google.api-client:google-api-client:1.20.0'
+  compile 'com.google.api-client:google-api-client-appengine:1.20.0'
 
-    //Google HTTP Client and extension for Jackson2 (generic HTTP library --> needed for other API calls like Directory)
-    compile 'com.google.http-client:google-http-client:1.20.0'
-    compile 'com.google.http-client:google-http-client-jackson2:1.20.0'
+  //Google HTTP Client and extension for Jackson2 (generic HTTP library --> needed for other API calls like Directory)
+  compile 'com.google.http-client:google-http-client:1.20.0'
+  compile 'com.google.http-client:google-http-client-jackson2:1.20.0'
 
-    //Google Directory API for Group and User management
-    compile 'com.google.apis:google-api-services-admin-directory:directory_v1-rev53-1.20.0'
+  //Google Directory API for Group and User management
+  compile 'com.google.apis:google-api-services-admin-directory:directory_v1-rev53-1.20.0'
 
-    //validation
-    compile "javax.validation:validation-api:1.1.0.Final"
-    //bean validator
-    compile "org.apache.bval:bval-jsr303:0.5"
+  //validation
+  compile 'javax.validation:validation-api:1.1.0.Final'
 
+  //bean validator
+  compile 'org.apache.bval:bval-jsr303:0.5'
 
-    /* TESTING */
-    testCompile 'junit:junit:4.10'
-    testCompile 'com.google.appengine:appengine-api-labs:1.9.27'
-    testCompile 'com.google.appengine:appengine-testing:1.9.27'
-    testCompile 'com.google.appengine:appengine-api-stubs:1.9.27'
-    testCompile "org.mockito:mockito-core:1.+"
+  /* TESTING */
+  testCompile 'junit:junit:4.10'
+  testCompile 'com.google.appengine:appengine-api-labs:1.9.27'
+  testCompile 'com.google.appengine:appengine-testing:1.9.27'
+  testCompile 'com.google.appengine:appengine-api-stubs:1.9.27'
+  testCompile 'org.mockito:mockito-core:1.+'
 }
 
 appengine {
 
-    httpPort = 8888
-    httpAddress = "0.0.0.0"
-    downloadSdk = true
+  httpPort = 8888
+  httpAddress = '0.0.0.0'
+  downloadSdk = true
 
-    jvmFlags = [
-            "-Xdebug",
-            "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000",
-            "-Ddatastore.backing_store=$projectDir/etc/appengineRun/local_db.bin",
-            "-DLocalSearchService.useDirectory=$projectDir/etc/appengineRun/"
-    ]
+  jvmFlags = [
+    '-Xdebug',
+    '-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000',
+    '-Ddatastore.backing_store=$projectDir/etc/appengineRun/local_db.bin',
+    '-DLocalSearchService.useDirectory=$projectDir/etc/appengineRun/'
+  ]
 
-    appcfg {
-        oauth2 = true
-        logs { severity = 1 }
-        noCookies = false
+  appcfg {
+    oauth2 = true
+    logs { severity = 1 }
+    noCookies = false
 
-    }
-    update { useJava7 = true }
+  }
+  update { useJava7 = true }
 }
 
 test {
 
-    jvmArgs = [
-            "-Xdebug",
-            "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000"
-    ]
-    testLogging {
-        events "passed", "skipped", "failed"
-        showStandardStreams = false
-    }
+  jvmArgs = [
+    '-Xdebug',
+    '-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000'
+  ]
+  testLogging {
+    events 'passed', 'skipped', 'failed'
+    showStandardStreams = false
+  }
+}
+
+appengineUpdate.dependsOn('npmInstall')
+
+task wrapper(type: Wrapper) {
+  gradleVersion = '2.10'
+}
+
+task bower(type: Exec) {
+  commandLine "${C:/Users/Robin/AppData/Roaming/npm}bower", "install"
 }

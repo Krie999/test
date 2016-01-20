@@ -98,7 +98,9 @@ module.exports = function () {
      *  6 templates
      */
     testlibraries: [
-      nodeModules + '/jasmine/lib/jasmine.js',
+      nodeModules + '/mocha/mocha.js',
+      nodeModules + '/chai/chai.js',
+      nodeModules + '/sinon-chai/lib/sinon-chai.js'
     ],
     specHelpers: [client + 'test-helpers/*.js'],
     specs: [clientApp + '**/*.spec.js'],

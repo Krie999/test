@@ -3,6 +3,13 @@
 
   angular
     .module('app.core')
-    .constant('toastr', toastr)
-    .constant('_', _);
+    .constant('toastr', window.toastr)
+    .constant('_', window._);
 })();
+
+
+
+
+
+
+
