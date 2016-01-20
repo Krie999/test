@@ -2,7 +2,8 @@
 //TODO: Hot Deploy
 //TODO: Execute full build from gradle, including browser-sync and e2e tests
 //TODO: Create separate deploy-dev, deploy-qa and deploy-prod tasks configuring the correct params
-//TODO: Run bower install on appengineUpdate
+//TODO: Run bower install on appengineUpdate (npm install works)
+//TODO: Group related stuff in build.gradle as to maintain a clearer overview
 buildscript {
   repositories {
     mavenCentral()
@@ -26,7 +27,6 @@ gulp {
 repositories {
   mavenLocal()
   mavenCentral()
-  jcenter()
 }
 
 //apply plugin: 'war'
