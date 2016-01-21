@@ -22,7 +22,6 @@ build.gradle
 #Client
 bower_components
 node_modules
-.tmp
 
 #Other
 bin

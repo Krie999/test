@@ -108,7 +108,3 @@ appengineUpdate.dependsOn('npmInstall')
 task wrapper(type: Wrapper) {
   gradleVersion = '2.10'
 }
-
-task bower(type: Exec) {
-  commandLine "${C:/Users/Robin/AppData/Roaming/npm}bower", "install"
-}
