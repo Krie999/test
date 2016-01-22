@@ -8,7 +8,7 @@ module.exports = function() {
   var report = './report/';
   var root = './';
   var specRunnerFile = 'specs.html';
-  var temp = client + '.tmp/';
+  var assets = client + 'assets/';
   var wiredep = require('wiredep');
   var bower = {
     json: require('./bower.json'),
@@ -26,11 +26,13 @@ module.exports = function() {
       './*.js',
       '!' + bower.directory + '**/*.*'
     ],
+    assets: assets,
     build: build + 'libs/' + appName,
     client: client,
-    css: temp + 'styles.css',
+    css: assets + '*.css',
     fonts: bower.directory + 'font-awesome/fonts/**/*.*',
     explodedApp: exploded + 'app/',
+    explodedAssets: exploded + 'assets/',
     html: client + '**/*.html',
     htmlTemplates: clientApp + '**/*.html',
     images: client + 'images/**/*.*',
@@ -47,9 +49,8 @@ module.exports = function() {
     ],
     report: report,
     root: root,
-    sass: client + 'styles/*.scss',
+    sass: './helpers/sass/**/*.scss',
     source: 'src/main/webapps/',
-    temp: temp,
 
     /**
      * Optimized files
@@ -133,7 +134,7 @@ module.exports = function() {
         config.specHelpers,
         clientApp + '**/*.module.js',
         clientApp + '**/*.js',
-        temp + config.templateCache.file/*,*/
+        assets + config.templateCache.file/*,*/
         //config.serverIntegrationSpecs
       ),
       exclude: [],

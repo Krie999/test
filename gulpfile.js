@@ -79,7 +79,7 @@ gulp.task('styles', ['clean-styles'], function() {
     .src(config.sass)
     .pipe($.sass().on('error', $.sass.logError))
     .pipe($.autoprefixer({browsers: ['last 2 version', '> 5%']}))
-    .pipe(gulp.dest(config.temp));
+    .pipe(gulp.dest(config.assets));
 });
 
 /**
@@ -130,7 +130,7 @@ gulp.task('templatecache', ['clean-code'], function() {
       config.templateCache.file,
       config.templateCache.options
     ))
-    .pipe(gulp.dest(config.temp));
+    .pipe(gulp.dest(config.assets));
 });
 
 /**
@@ -174,7 +174,7 @@ gulp.task('wiredep', function() {
 //  log('building the spec runner');
 //
 //  var wiredep = require('wiredep').stream;
-//  var templateCache = config.temp + config.templateCache.file;
+//  var templateCache = config.assets + config.templateCache.file;
 //  var options = config.getWiredepDefaultOptions();
 //  var specs = config.specs;
 //  options.devDependencies = true;
@@ -209,26 +209,26 @@ gulp.task('clean-images', function(done) {
 });
 
 /**
- * Remove all styles from the build and temp folders
+ * Remove all styles from the build and assets folders
  *
  * @param  {Function} done - callback when complete
  */
 gulp.task('clean-styles', function(done) {
   var files = [].concat(
-    config.temp + '**/*.css',
+    config.assets + '**/*.css',
     config.build + 'styles/**/*.css'
   );
   clean(files, done);
 });
 
 /**
- * Remove all js and html from the build and temp folders
+ * Remove all js and html from the build and assets folders
  *
  * @param  {Function} done - callback when complete
  */
 gulp.task('clean-code', function(done) {
   var files = [].concat(
-    config.temp + '**/*.js',
+    config.assets + '**/*.js',
     config.build + 'js/**/*.js',
     config.build + '**/*.html'
   );
@@ -236,12 +236,12 @@ gulp.task('clean-code', function(done) {
 });
 
 /**
- * Remove all files from the build, temp, and reports folders
+ * Remove all files from the build, assets, and reports folders
  *
  * @param  {Function} done - callback when complete
  */
 gulp.task('clean', function(done) {
-  var delconfig = [].concat(config.build, config.temp, config.report);
+  var delconfig = [].concat(config.build, config.assets, config.report);
   log('Cleaning: ' + colors.blue(delconfig));
   del(delconfig, done);
 });
@@ -259,7 +259,7 @@ gulp.task('build', ['optimize', 'images', 'fonts'], function() {
     subtitle: 'Deployed to the build folder',
     message: 'Running \'gulp serve-build\''
   };
-  del(config.temp);
+  del(config.assets);
   log(msg);
   notify(msg);
 });
@@ -280,7 +280,7 @@ gulp.task('optimize', ['inject', 'test'], function() {
   var jsAppFilter = $.filter('**/' + config.optimized.app);
   var jsLibFilter = $.filter('**/' + config.optimized.lib);
 
-  var templateCache = config.temp + config.templateCache.file;
+  var templateCache = config.assets + config.templateCache.file;
 
   return gulp
     .src(config.index)
@@ -331,7 +331,7 @@ gulp.task('build', ['optimize', 'images', 'fonts'], function() {
     subtitle: 'Deployed to the build folder',
     message: 'Running `gulp serve-build`'
   };
-  del(config.temp);
+  del(config.assets);
   log(msg);
   notify(msg);
 });
@@ -408,6 +408,12 @@ gulp.task('copyJs', function() {
   return gulp.src(config.js)
              .pipe($.changed(config.explodedApp))
              .pipe(gulp.dest(config.explodedApp));
+});
+
+gulp.task('copyAssets', ['styles', 'templatecache'], function() {
+  return gulp.src(config.assets + '*.*')
+             .pipe($.changed(config.explodedAssets))
+             .pipe(gulp.dest(config.explodedAssets));
 });
 
 ///////////////////////////////////
@@ -539,7 +545,7 @@ function startBrowserSync(isDev, specRunner) {
   // If build: watches the files, builds, and restarts browser-sync.
   // If dev: watches less, compiles it to css, browser-sync handles reload
   if (isDev) {
-    gulp.watch([config.sass, config.js], ['styles', 'copyJs'])
+    gulp.watch([config.sass, config.js], ['copyJs', 'copyAssets'])
         .on('change', changeEvent);
   } else {
     gulp.watch([config.sass, config.js, config.html], ['browserSyncReload'])
@@ -550,9 +556,9 @@ function startBrowserSync(isDev, specRunner) {
     proxy: 'localhost:' + port,
     port: 3000,
     files: isDev ? [
-      config.client + '**/*.*',
+      config.explodedApp + '**/*.js',
       '!' + config.sass,
-      config.temp + '**/*.css'
+      config.explodedAssets + '**/*.*'
     ] : [],
     ghostMode: { // these are the defaults t,f,t,t
       clicks: true,
