@@ -1,6 +1,10 @@
 module.exports = function() {
+  //Change this for new apps
+  var appName = 'gae-template.war';
+  var build = './build/';
   var client = './src/main/webapp/';
   var clientApp = client + 'app/';
+  var exploded = build + 'exploded-app/';
   var report = './report/';
   var root = './';
   var specRunnerFile = 'specs.html';
@@ -22,16 +26,17 @@ module.exports = function() {
       './*.js',
       '!' + bower.directory + '**/*.*'
     ],
-    build: './build/exploded-app/',
+    build: build + 'libs/' + appName,
     client: client,
     css: temp + 'styles.css',
     fonts: bower.directory + 'font-awesome/fonts/**/*.*',
+    explodedApp: exploded + 'app/',
     html: client + '**/*.html',
     htmlTemplates: clientApp + '**/*.html',
     images: client + 'images/**/*.*',
     index: client + 'index.html',
     js: [
-      clientApp + '**/module.js',
+      clientApp + '**/*.module.js',
       clientApp + '**/*.js',
       '!' + clientApp + '**/*.spec.js'
     ],
@@ -42,7 +47,7 @@ module.exports = function() {
     ],
     report: report,
     root: root,
-    sass: client + 'styles/styles.scss',
+    sass: client + 'styles/*.scss',
     source: 'src/main/webapps/',
     temp: temp,
 

@@ -404,6 +404,12 @@ gulp.task('serve-build', ['build'], function() {
  */
 gulp.task('browserSyncReload', ['optimize'], browserSync.reload);
 
+gulp.task('copyJs', function() {
+  return gulp.src(config.js)
+             .pipe($.changed(config.explodedApp))
+             .pipe(gulp.dest(config.explodedApp));
+});
+
 ///////////////////////////////////
 
 /**
@@ -533,11 +539,11 @@ function startBrowserSync(isDev, specRunner) {
   // If build: watches the files, builds, and restarts browser-sync.
   // If dev: watches less, compiles it to css, browser-sync handles reload
   if (isDev) {
-    gulp.watch([config.sass], ['styles'])
-      .on('change', changeEvent);
+    gulp.watch([config.sass, config.js], ['styles', 'copyJs'])
+        .on('change', changeEvent);
   } else {
     gulp.watch([config.sass, config.js, config.html], ['browserSyncReload'])
-      .on('change', changeEvent);
+        .on('change', changeEvent);
   }
 
   var options = {
