@@ -1,4 +1,4 @@
-(function () {
+(function() {
   'use strict';
 
   angular
@@ -6,10 +6,3 @@
     .constant('toastr', window.toastr)
     .constant('_', window._);
 })();
-
-
-
-
-
-
-

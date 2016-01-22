@@ -4,6 +4,7 @@
 //TODO: Create separate deploy-dev, deploy-qa and deploy-prod tasks configuring the correct params
 //TODO: Run bower install on appengineUpdate (npm install works)
 //TODO: Group related stuff in build.gradle as to maintain a clearer overview
+//TODO: Fix appenginerun stuck at 87% in order to fully utilize gradle daemons
 buildscript {
   repositories {
     mavenCentral()
@@ -19,10 +20,6 @@ plugins {
 }
 
 defaultTasks 'clean', 'appengineRun'
-
-gulp {
-  colors = true
-}
 
 repositories {
   mavenLocal()
@@ -69,6 +66,10 @@ dependencies {
   testCompile 'org.mockito:mockito-core:1.+'
 }
 
+gulp {
+  colors = true
+}
+
 appengine {
 
   httpPort = 8888
@@ -86,13 +87,12 @@ appengine {
     oauth2 = true
     logs { severity = 1 }
     noCookies = false
-
   }
+
   update { useJava7 = true }
 }
 
 test {
-
   jvmArgs = [
     '-Xdebug',
     '-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000'

@@ -1,0 +1,57 @@
+{
+  //Defined default values as well
+  "bitwise": true,
+  //Specified in .jscsrc as well
+  "curly": true,
+  "eqeqeq": true,
+  "es3": false,
+  "forin": false,
+  "freeze": true,
+  "funcscope": true,
+  "futurehostile": true,
+  //False means read-only
+  "globals": {
+    "angular": false
+  },
+  "iterator": false,
+  "latedef": "nofunc",
+  "maxcomplexity": 8,
+  "maxdepth": 5,
+  "maxerr": 50,
+  "maxparams": 10,
+  "maxstatements": 40,
+
+  "noarg": true,
+  //Not sure what this means
+  //    "nocomma": "tobedetermined",
+  "nonbsp": true,
+  "nonew": true,
+  "notypeof": false,
+  "shadow": "outer",
+  "singleGroups": true,
+  "undef": true,
+  "unused": true,
+  "varstmt": false,
+
+  //Relaxing options -- less important
+  "asi": false,
+  "boss": false,
+  "debug": true,
+  "elision": false,
+  "eqnull": false,
+  "evil": false,
+  "expr": false,
+  "lastsemic": false,
+  "loopfunc": false,
+  "moz": false,
+  "noyield": false,
+  "plusplus": false,
+  "proto": false,
+  "scripturl": false,
+  "supernew": false,
+  "withstmt": false,
+
+  "browser": true,
+  "node": true,
+  "mocha": true
+}

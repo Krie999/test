@@ -1,16 +1,16 @@
-module.exports = function () {
+module.exports = function() {
   var client = './src/main/webapp/';
   var clientApp = client + 'app/';
   var report = './report/';
   var root = './';
   var specRunnerFile = 'specs.html';
-  var temp = './.tmp/';
+  var temp = client + '.tmp/';
   var wiredep = require('wiredep');
-  var bowerFiles = wiredep({devDependencies: true}).js;
   var bower = {
     json: require('./bower.json'),
-    directory: './bower_components/'
+    directory: './src/main/webapp/bower_components/'
   };
+  var bowerFiles = wiredep({directory: bower.directory, devDependencies: true}).js;
   var nodeModules = 'node_modules';
 
   var config = {
@@ -19,7 +19,8 @@ module.exports = function () {
      */
     allJs: [
       './src/main/webapp/**/*.js',
-      './*.js'
+      './*.js',
+      '!' + bower.directory + '**/*.*'
     ],
     build: './build/exploded-app/',
     client: client,
@@ -34,7 +35,7 @@ module.exports = function () {
       clientApp + '**/*.js',
       '!' + clientApp + '**/*.spec.js'
     ],
-    jsOrder : [
+    jsOrder: [
       '**/app.module.js',
       '**/*.module.js',
       '**/*.js'
@@ -104,14 +105,13 @@ module.exports = function () {
     ],
     specHelpers: [client + 'test-helpers/*.js'],
     specs: [clientApp + '**/*.spec.js'],
-    defaultPort: '8001'
+    defaultPort: '8888'
   };
 
-  config.getWiredepDefaultOptions = function () {
+  config.getWiredepDefaultOptions = function() {
     return {
       bowerJson: config.bower.json,
-      directory: config.bower.directory,
-      ignorePath: config.bower.ignorePath
+      directory: config.bower.directory
     };
   };
 
@@ -135,7 +135,7 @@ module.exports = function () {
       coverage: {
         dir: report + 'coverage',
         reporters: [
-          // reporters not supporting the `file` property
+          //reporters not supporting the `file` property
           {type: 'html', subdir: 'report-html'},
           {type: 'lcov', subdir: 'report-lcov'},
           {type: 'text-summary'} //, subdir: '.', file: 'text-summary.txt'}

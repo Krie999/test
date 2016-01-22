@@ -1,0 +1,50 @@
+{
+  "preset": "google",
+  "disallowEmptyBlocks": true,
+  "disallowImplicitTypeConversion": ["numeric", "string", "binary"],
+  "disallowMultipleSpaces": true,
+  "disallowNestedTernaries": true,
+  "disallowKeywordsOnNewLine": [
+    "else",
+    "catch"
+  ],
+  "disallowQuotedKeysInObjects": true,
+  "disallowSpaceBeforeComma": true,
+  "disallowSpaceBeforePostfixUnaryOperators": true,
+  "disallowSpaceBeforeSemicolon": true,
+  "disallowTabs": true,
+  "disallowTrailingWhitespace": "ignoreEmptyLines",
+  "maximumLineLength": {
+    "value": 120,
+    "allExcept": ["comments", "regex"]
+  },
+  "maximumNumberOfLines": {
+    "allExcept": [
+      "comments"
+    ],
+    "value": 350
+  },
+  "requireBlocksOnNewline": 3,
+  "requireCamelCaseOrUpperCaseIdentifiers": true,
+  "requireCommaBeforeLineBreak": true,
+  "requireDollarBeforejQueryAssignment": true,
+  "requireEarlyReturn": true,
+  "requireFunctionDeclarations": true,
+  "requireLineBreakAfterVariableAssignment": true,
+  "requireLineFeedAtFileEnd": false,
+  "requireMatchingFunctionName": true,
+  "requirePaddingNewLinesAfterUseStrict": true,
+  "requirePaddingNewLinesBeforeExport": true,
+  "requireParenthesesAroundIIFE": true,
+  "requireSpaceAfterComma": true,
+  "requireSpaceBetweenArguments": true,
+  "safeContextKeyword": [
+    "vm",
+    "that"
+  ],
+  "validateNewlineAfterArrayElements": 5,
+  "validateQuoteMarks": {
+    "escape": true,
+    "mark": "'"
+  }
+}

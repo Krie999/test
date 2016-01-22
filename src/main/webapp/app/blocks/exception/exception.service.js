@@ -1,4 +1,4 @@
-(function () {
+(function() {
   'use strict';
 
   angular
@@ -15,7 +15,7 @@
     ////////////////
 
     function catcher(message) {
-      return function (e) {
+      return function(e) {
         var thrownDescription;
         var newMessage;
         if (e.data && e.data.description) {
