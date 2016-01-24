@@ -1,13 +1,7 @@
 // jscs:disable maximumNumberOfLines
 /*
- * TODO: Upgrade del to work with Promise API
  * TODO: Wiredep with stubs?
  * TODO: Server integration specs?
- * TODO: Look into gulp-rev and rev-replace
- * TODO: Serve specs, dev and build from GAE
- * TODO: Create separate file with description of most used gulp tasks and their use cases
- * TODO: Bump more than just package.json and bower.json
- * TODO: Optimize should have a dest in the war instead of the exploded dir
  * TODO: Try out gulp-watch plugin
  */
 var args = require('yargs').argv;
