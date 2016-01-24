@@ -2,7 +2,7 @@
 //TODO: Hot Deploy --> Does not exist yet, see https://github.com/GoogleCloudPlatform/gradle-appengine-plugin/issues/97
 //TODO: Execute full build from gradle, including browser-sync and e2e tests
 //TODO: Create separate deploy-dev, deploy-qa and deploy-prod tasks configuring the correct params
-//TODO: Run bower install on appengineUpdate (npm install works)
+//TODO: Run bower install on appengineUpdate
 //TODO: Group related stuff in build.gradle as to maintain a clearer overview
 //TODO: Fix appenginerun stuck at 87% in order to fully utilize gradle daemons
 buildscript {
@@ -103,12 +103,9 @@ test {
   }
 }
 
-appengineUpdate.dependsOn('npmInstall')
-
 task wrapper(type: Wrapper) {
   gradleVersion = '2.10'
 }
-
 
 //task reloadClasses (type: Copy) {
 //  from sourceSets.main.output

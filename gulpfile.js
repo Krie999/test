@@ -8,7 +8,7 @@
  * TODO: Create separate file with description of most used gulp tasks and their use cases
  * TODO: Bump more than just package.json and bower.json
  * TODO: Optimize should have a dest in the war instead of the exploded dir
- * TODO: Group tasks by function
+ * TODO: Try out gulp-watch plugin
  */
 var args = require('yargs').argv;
 var browserSync = require('browser-sync');
@@ -25,7 +25,7 @@ var port = process.env.port || config.defaultPort;
 
 /**
  * yargs variables can be passed in to alter the behavior, when present.
- * Example: gulp serve-dev
+ * Example: gulp serve_dev
  *
  * --verbose  : Various tasks will produce more output to the console.
  * --nosync   : Don't launch the browser with browser-sync when serving code.
@@ -87,7 +87,7 @@ gulp.task('styles', ['clean-styles'], function() {
  *
  * @return {Stream}
  */
-gulp.task('fonts', ['clean-fonts'], function() {
+gulp.task('fonts', ['clean_fonts'], function() {
   log('Copying fonts');
 
   return gulp
@@ -100,7 +100,7 @@ gulp.task('fonts', ['clean-fonts'], function() {
  *
  * @return {Stream}
  */
-gulp.task('images', ['clean-images'], function() {
+gulp.task('images', ['clean_images'], function() {
   log('Compressing and copying images');
 
   return gulp
@@ -109,7 +109,7 @@ gulp.task('images', ['clean-images'], function() {
     .pipe(gulp.dest(config.build + 'images'));
 });
 
-gulp.task('sass-watcher', function() {
+gulp.task('watch_sass', function() {
   gulp.watch([config.sass], ['styles']);
 });
 
@@ -118,7 +118,7 @@ gulp.task('sass-watcher', function() {
  *
  * @return {Stream}
  */
-gulp.task('templatecache', ['clean-code'], function() {
+gulp.task('templatecache', ['clean_code'], function() {
   log('Creating an AngularJS $templateCache');
 
   return gulp
@@ -139,7 +139,7 @@ gulp.task('templatecache', ['clean-code'], function() {
  * @return {Stream}
  */
 gulp.task('wiredep', function() {
-  log('Wiring the bower dependencies into the html');
+  log('Wiring the bower dependencies into index.html');
 
   var wiredep = require('wiredep').stream;
   var options = config.getWiredepDefaultOptions();
@@ -159,7 +159,7 @@ gulp.task('wiredep', function() {
  *
  * @param  {Function} done - callback when complete
  */
-gulp.task('clean-fonts', function(done) {
+gulp.task('clean_fonts', function(done) {
   clean(config.build + 'fonts/**/*.*', done);
 });
 
@@ -168,7 +168,7 @@ gulp.task('clean-fonts', function(done) {
  *
  * @param  {Function} done - callback when complete
  */
-gulp.task('clean-images', function(done) {
+gulp.task('clean_images', function(done) {
   clean(config.build + 'images/**/*.*', done);
 });
 
@@ -190,7 +190,7 @@ gulp.task('clean-styles', function(done) {
  *
  * @param  {Function} done - callback when complete
  */
-gulp.task('clean-code', function(done) {
+gulp.task('clean_code', function(done) {
   var files = [].concat(
     config.assets + '**/*.js',
     config.build + 'js/**/*.js',
@@ -221,7 +221,7 @@ gulp.task('build', ['optimize', 'images', 'fonts'], function() {
   var msg = {
     title: 'gulp build',
     subtitle: 'Deployed to the build folder',
-    message: 'Running \'gulp serve-build\''
+    message: 'Running \'gulp serve_build\''
   };
   del(config.assets);
   log(msg);
@@ -242,12 +242,9 @@ gulp.task('optimize', ['inject', 'test'], function() {
   var jsAppFilter = $.filter('**/' + config.optimized.app);
   var jsLibFilter = $.filter('**/' + config.optimized.lib);
 
-  var templateCache = config.assets + config.templateCache.file;
-
   return gulp
     .src(config.index)
     .pipe($.plumber())
-    .pipe(inject(templateCache, 'templates'))
     // Gather all assets from the html with useref
     .pipe($.useref({searchPath: config.client}))
     // Get the css
@@ -269,10 +266,12 @@ gulp.task('optimize', ['inject', 'test'], function() {
 
 gulp.task('inject', ['wiredep', 'styles', 'templatecache'], function() {
   log('Wire up css into the html, after files are ready');
+  var templateCache = config.assets + config.templateCache.file;
 
   return gulp
     .src(config.index)
     .pipe(inject(config.css))
+    .pipe(inject(templateCache, 'templates'))
     .pipe(gulp.dest(config.client));
 });
 
@@ -328,14 +327,14 @@ gulp.task('autotest', function(done) {
  * serve the dev environment
  *
  */
-gulp.task('serve-dev', ['inject'], function() {
+gulp.task('serve_dev', ['inject'], function() {
   serve(true);
 });
 
 /**
  * serve the build environment
  */
-gulp.task('serve-build', ['build'], function() {
+gulp.task('serve_build', ['build'], function() {
   serve(false);
 });
 
@@ -344,8 +343,10 @@ gulp.task('serve-build', ['build'], function() {
  */
 gulp.task('browserSyncReload', ['optimize'], browserSync.reload);
 
+/**
+ * Copy js files to the exploded app dir
+ */
 gulp.task('copyJs', function() {
-
   log("Copying js files to exploded directory");
 
   return gulp.src(config.js)
@@ -353,8 +354,10 @@ gulp.task('copyJs', function() {
              .pipe(gulp.dest(config.explodedApp));
 });
 
+/**
+ * Copy assets to the exploded app dir
+ */
 gulp.task('copyAssets', ['styles', 'templatecache'], function() {
-
   log("Copying assets to exploded directory");
 
   return gulp.src(config.assets + '**/*.*')
@@ -362,8 +365,10 @@ gulp.task('copyAssets', ['styles', 'templatecache'], function() {
              .pipe(gulp.dest(config.explodedAssets));
 });
 
+/**
+ * Copy index.html to the exploded dir
+ */
 gulp.task('copyIndex', function() {
-
   log("Copying index file to exploded directory");
 
   return gulp.src(config.index)
@@ -500,7 +505,7 @@ function startBrowserSync(isDev, specRunner) {
   // If build: watches the files, builds, and restarts browser-sync.
   // If dev: watches sass, compiles it to css, browser-sync handles reload
   if (isDev) {
-    gulp.watch([config.sass, config.js, config.html], ['copyJs', 'copyAssets'])
+    gulp.watch([config.sass, config.js, config.html, config.index], ['copyJs', 'copyAssets', 'copyIndex'])
         .on('change', changeEvent);
   } else {
     gulp.watch([config.sass, config.js, config.html], ['browserSyncReload'])

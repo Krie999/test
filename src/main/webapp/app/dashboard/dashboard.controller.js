@@ -8,7 +8,7 @@
   /* @ngInject */
   function DashboardController() {
     var vm = this;
-    vm.title = 'Hello, world!';
+    vm.title = 'Hello, Veronique!';
   }
 
 })();
