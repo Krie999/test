@@ -1,5 +1,5 @@
 //TODO: Code linting for Java files
-//TODO: Hot Deploy
+//TODO: Hot Deploy --> Does not exist yet, see https://github.com/GoogleCloudPlatform/gradle-appengine-plugin/issues/97
 //TODO: Execute full build from gradle, including browser-sync and e2e tests
 //TODO: Create separate deploy-dev, deploy-qa and deploy-prod tasks configuring the correct params
 //TODO: Run bower install on appengineUpdate (npm install works)
@@ -108,3 +108,22 @@ appengineUpdate.dependsOn('npmInstall')
 task wrapper(type: Wrapper) {
   gradleVersion = '2.10'
 }
+
+
+//task reloadClasses (type: Copy) {
+//  from sourceSets.main.output
+//  into ".build/exploded-app/WEB-INF/classes"
+//
+//  dependsOn classes
+//}
+//
+//task reloadWebAppDir (type: Copy) {
+//  from (project.convention.getPlugin(WarPluginConvention).webAppDir) {
+//    exclude "WEB-INF/*"
+//  }
+//  into "./build/exploded-app/WEB-INF/classes"
+//}
+//
+//task customReload {
+//  dependsOn reloadClasses, reloadWebAppDir
+//}

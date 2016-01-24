@@ -7,6 +7,7 @@ module.exports = function() {
   var exploded = build + 'exploded-app/';
   var report = './report/';
   var root = './';
+  var tests = './src/test/js/';
   var specRunnerFile = 'specs.html';
   var assets = client + 'assets/';
   var wiredep = require('wiredep');
@@ -22,8 +23,9 @@ module.exports = function() {
      * File paths
      */
     allJs: [
-      './src/main/webapp/**/*.js',
+      client + '/**/*.js',
       './*.js',
+      '!' + assets + '**/*.*',
       '!' + bower.directory + '**/*.*'
     ],
     assets: assets,
@@ -31,6 +33,7 @@ module.exports = function() {
     client: client,
     css: assets + '*.css',
     fonts: bower.directory + 'font-awesome/fonts/**/*.*',
+    exploded: exploded,
     explodedApp: exploded + 'app/',
     explodedAssets: exploded + 'assets/',
     html: client + '**/*.html',
@@ -39,8 +42,7 @@ module.exports = function() {
     index: client + 'index.html',
     js: [
       clientApp + '**/*.module.js',
-      clientApp + '**/*.js',
-      '!' + clientApp + '**/*.spec.js'
+      clientApp + '**/*.js'
     ],
     jsOrder: [
       '**/app.module.js',
@@ -91,7 +93,7 @@ module.exports = function() {
     /**
      * specs.html, our HTML spec runner
      */
-    specRunner: client + specRunnerFile,
+    specRunner: tests + specRunnerFile,
     specRunnerFile: specRunnerFile,
 
     /**
@@ -109,8 +111,8 @@ module.exports = function() {
       nodeModules + '/chai/chai.js',
       nodeModules + '/sinon-chai/lib/sinon-chai.js'
     ],
-    specHelpers: [client + 'test-helpers/*.js'],
-    specs: [clientApp + '**/*.spec.js'],
+    specHelpers: ['./helpers/test-helpers/**/*.js'],
+    specs: [tests + '**/*.spec.js'],
     defaultPort: '8888'
   };
 
@@ -134,7 +136,8 @@ module.exports = function() {
         config.specHelpers,
         clientApp + '**/*.module.js',
         clientApp + '**/*.js',
-        assets + config.templateCache.file/*,*/
+        assets + config.templateCache.file,
+        config.specs
         //config.serverIntegrationSpecs
       ),
       exclude: [],
@@ -149,7 +152,7 @@ module.exports = function() {
       },
       preprocessors: {}
     };
-    options.preprocessors[clientApp + '**/!(*.spec)+(.js)'] = ['coverage'];
+    options.preprocessors[clientApp + '**/*.js'] = ['coverage'];
     return options;
   }
 };

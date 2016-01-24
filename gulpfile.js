@@ -1,7 +1,6 @@
 // jscs:disable maximumNumberOfLines
 /*
  * TODO: Upgrade del to work with Promise API
- * TODO: Analyze speed difference with gulp-changed
  * TODO: Wiredep with stubs?
  * TODO: Server integration specs?
  * TODO: Look into gulp-rev and rev-replace
@@ -9,6 +8,7 @@
  * TODO: Create separate file with description of most used gulp tasks and their use cases
  * TODO: Bump more than just package.json and bower.json
  * TODO: Optimize should have a dest in the war instead of the exploded dir
+ * TODO: Group tasks by function
  */
 var args = require('yargs').argv;
 var browserSync = require('browser-sync');
@@ -154,42 +154,6 @@ gulp.task('wiredep', function() {
     .pipe(gulp.dest(config.client));
 });
 
-///**
-// * Run the spec runner
-// * @return {Stream}
-// */
-//gulp.task('serve-specs', ['build-specs'], function(done) {
-//  log('run the spec runner');
-//  serve(true /* isDev */, true /* specRunner */);
-//  done();
-//});
-//
-////TODO: Find out how this will work with a GAE back-end
-////This will not work yet
-///**
-// * Inject all the spec files into the specs.html
-// * @return {Stream}
-// */
-//gulp.task('build-specs', ['templatecache'], function() {
-//  log('building the spec runner');
-//
-//  var wiredep = require('wiredep').stream;
-//  var templateCache = config.assets + config.templateCache.file;
-//  var options = config.getWiredepDefaultOptions();
-//  var specs = config.specs;
-//  options.devDependencies = true;
-//
-//  return gulp
-//    .src(config.specRunner)
-//    .pipe(wiredep(options))
-//    .pipe(inject(config.js, '', config.jsOrder))
-//    .pipe(inject(config.testlibraries, 'testlibraries'))
-//    .pipe(inject(config.specHelpers, 'spechelpers'))
-//    .pipe(inject(specs, 'specs', ['**/*']))
-//    .pipe(inject(templateCache, 'templates'))
-//    .pipe(gulp.dest(config.client));
-//});
-
 /**
  * Remove all fonts from the build folder
  *
@@ -273,8 +237,6 @@ gulp.task('build', ['optimize', 'images', 'fonts'], function() {
 gulp.task('optimize', ['inject', 'test'], function() {
   log('Optimizing the js, css, and html');
 
-  //var assets = $.useref.assets({searchPath: config.client});
-
   // Filters are named for the gulp-useref path
   var cssFilter = $.filter('**/*.css');
   var jsAppFilter = $.filter('**/' + config.optimized.app);
@@ -300,12 +262,8 @@ gulp.task('optimize', ['inject', 'test'], function() {
     .pipe(jsAppFilter.restore())
     // Get the vendor javascript
     .pipe(jsLibFilter)
-    .pipe($.uglify()) // another option is to override wiredep to use min files
+    .pipe($.uglify())
     .pipe(jsLibFilter.restore())
-    // Take inventory of the file names for future rev numbers
-    //.pipe($.rev())
-    //// Replace the file names in the html with rev numbers
-    //.pipe($.revReplace())
     .pipe(gulp.dest(config.build));
 });
 
@@ -316,24 +274,6 @@ gulp.task('inject', ['wiredep', 'styles', 'templatecache'], function() {
     .src(config.index)
     .pipe(inject(config.css))
     .pipe(gulp.dest(config.client));
-});
-
-/**
- * Build everything
- * This is separate so we can run tests on
- * optimize before handling image or fonts
- */
-gulp.task('build', ['optimize', 'images', 'fonts'], function() {
-  log('Building everything');
-
-  var msg = {
-    title: 'gulp build',
-    subtitle: 'Deployed to the build folder',
-    message: 'Running `gulp serve-build`'
-  };
-  del(config.assets);
-  log(msg);
-  notify(msg);
 });
 
 /**
@@ -389,14 +329,14 @@ gulp.task('autotest', function(done) {
  *
  */
 gulp.task('serve-dev', ['inject'], function() {
-  serve(true /*isDev*/);
+  serve(true);
 });
 
 /**
  * serve the build environment
  */
 gulp.task('serve-build', ['build'], function() {
-  serve(false /*isDev*/);
+  serve(false);
 });
 
 /**
@@ -405,15 +345,30 @@ gulp.task('serve-build', ['build'], function() {
 gulp.task('browserSyncReload', ['optimize'], browserSync.reload);
 
 gulp.task('copyJs', function() {
+
+  log("Copying js files to exploded directory");
+
   return gulp.src(config.js)
              .pipe($.changed(config.explodedApp))
              .pipe(gulp.dest(config.explodedApp));
 });
 
 gulp.task('copyAssets', ['styles', 'templatecache'], function() {
-  return gulp.src(config.assets + '*.*')
+
+  log("Copying assets to exploded directory");
+
+  return gulp.src(config.assets + '**/*.*')
              .pipe($.changed(config.explodedAssets))
              .pipe(gulp.dest(config.explodedAssets));
+});
+
+gulp.task('copyIndex', function() {
+
+  log("Copying index file to exploded directory");
+
+  return gulp.src(config.index)
+             .pipe($.changed(config.exploded))
+             .pipe(gulp.dest(config.exploded));
 });
 
 ///////////////////////////////////
@@ -543,9 +498,9 @@ function startBrowserSync(isDev, specRunner) {
   log('Starting BrowserSync on port ' + port);
 
   // If build: watches the files, builds, and restarts browser-sync.
-  // If dev: watches less, compiles it to css, browser-sync handles reload
+  // If dev: watches sass, compiles it to css, browser-sync handles reload
   if (isDev) {
-    gulp.watch([config.sass, config.js], ['copyJs', 'copyAssets'])
+    gulp.watch([config.sass, config.js, config.html], ['copyJs', 'copyAssets'])
         .on('change', changeEvent);
   } else {
     gulp.watch([config.sass, config.js, config.html], ['browserSyncReload'])
@@ -557,7 +512,6 @@ function startBrowserSync(isDev, specRunner) {
     port: 3000,
     files: isDev ? [
       config.explodedApp + '**/*.js',
-      '!' + config.sass,
       config.explodedAssets + '**/*.*'
     ] : [],
     ghostMode: { // these are the defaults t,f,t,t
@@ -668,13 +622,10 @@ function notify(options) {
   notifier.notify(notifyOptions);
 }
 
-///**
-//
-// * @param  {Boolean} isDev - dev or build mode
-// * @param  {Boolean} specRunner - server spec runner html
-// */
+/**
+ * @param  {Boolean} isDev - dev or build mode
+ * @param  {Boolean} specRunner - server spec runner html
+ */
 function serve(isDev, specRunner) {
-
-  log('Starting browser sync...');
   startBrowserSync(isDev, specRunner);
 }
