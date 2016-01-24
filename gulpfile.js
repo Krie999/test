@@ -347,7 +347,7 @@ gulp.task('browserSyncReload', ['optimize'], browserSync.reload);
  * Copy js files to the exploded app dir
  */
 gulp.task('copyJs', function() {
-  log("Copying js files to exploded directory");
+  log('Copying js files to exploded directory');
 
   return gulp.src(config.js)
              .pipe($.changed(config.explodedApp))
@@ -358,7 +358,7 @@ gulp.task('copyJs', function() {
  * Copy assets to the exploded app dir
  */
 gulp.task('copyAssets', ['styles', 'templatecache'], function() {
-  log("Copying assets to exploded directory");
+  log('Copying assets to exploded directory');
 
   return gulp.src(config.assets + '**/*.*')
              .pipe($.changed(config.explodedAssets))
@@ -369,7 +369,7 @@ gulp.task('copyAssets', ['styles', 'templatecache'], function() {
  * Copy index.html to the exploded dir
  */
 gulp.task('copyIndex', function() {
-  log("Copying index file to exploded directory");
+  log('Copying index file to exploded directory');
 
   return gulp.src(config.index)
              .pipe($.changed(config.exploded))
