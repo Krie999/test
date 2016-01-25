@@ -3,7 +3,7 @@
     <!-- <application>bnppf-e2e-planning-tool-dev</application> -->
     <!-- <application>bnppf-e2e-qa</application> -->
     <!-- <application>bnppf-e2e</application> -->
-    <application>fourcast-gae-template</application>
+    <application>fc-gae</application>
 	<version>v1-0</version>
 	<threadsafe>true</threadsafe>
 	<instance-class>F1</instance-class>
