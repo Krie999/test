@@ -1,4 +1,4 @@
-(function () {
+(function() {
   'use strict';
 
   angular
@@ -12,14 +12,14 @@
     routerHelper.configureStates(getStates(), otherwise);
   }
 
-  function getStates () {
+  function getStates() {
     return [
       {
         state: '404',
         config: {
-          url: otherwise,
           templateUrl: 'app/core/404.html',
-          title: '404'
+          title: '404',
+          url: otherwise
         }
       }
     ];

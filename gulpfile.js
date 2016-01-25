@@ -1,18 +1,8 @@
-/**
- * Created by Robin on 18/01/2016.
- */
-
+// jscs:disable maximumNumberOfLines
 /*
- * TODO: Upgrade del to work with Promise API
- * TODO: Analyze speed difference with gulp-changed
  * TODO: Wiredep with stubs?
  * TODO: Server integration specs?
- * TODO: Look into gulp-rev and rev-replace
- * TODO: Serve specs, dev and build from GAE
- * TODO: Create separate file with description of most used gulp tasks and their use cases
- * TODO: Bump more than just package.json and bower.json
- * TODO: JSCS is not being called
- * TOOD: Compare jshint/jscs with older versions
+ * TODO: Try out gulp-watch plugin
  */
 var args = require('yargs').argv;
 var browserSync = require('browser-sync');
@@ -25,16 +15,14 @@ var _ = require('lodash');
 var $ = require('gulp-load-plugins')({lazy: true});
 
 var colors = $.util.colors;
-//var port = process.env.port || config.defaultPort;
+var port = process.env.port || config.defaultPort;
 
 /**
  * yargs variables can be passed in to alter the behavior, when present.
- * Example: gulp serve-dev
+ * Example: gulp serve_dev
  *
  * --verbose  : Various tasks will produce more output to the console.
  * --nosync   : Don't launch the browser with browser-sync when serving code.
- * --debug    : Launch debugger with node-inspector.
- * --debug-brk: Launch debugger and break on 1st line with node-inspector.
  * --startServers: Will start servers for midway tests on the test task.
  */
 
@@ -46,9 +34,10 @@ gulp.task('default', ['help']);
 
 /**
  * Vet the code and create coverate report
+ *
  * @return {Stream}
  */
-gulp.task('vet', function () {
+gulp.task('vet', function() {
   log('Analyzing source with JSHint and JSCS');
 
   return gulp
@@ -57,13 +46,15 @@ gulp.task('vet', function () {
     .pipe($.jshint())
     .pipe($.jshint.reporter('jshint-stylish'), {verbose: true})
     .pipe($.jshint.reporter('fail'))
-    .pipe($.jscs());
+    .pipe($.jscs())
+    .pipe($.jscsStylish())
+    .pipe($.jscs.reporter('fail'));
 });
 
 /**
  * Create a visualizer report
  */
-gulp.task('plato', function (done) {
+gulp.task('plato', function(done) {
   log('Analyzing source with Plato');
   log('Browse to /report/plato/index.html to see Plato results');
 
@@ -72,23 +63,25 @@ gulp.task('plato', function (done) {
 
 /**
  * Compile sass to css
+ *
  * @return {Stream}
  */
-gulp.task('styles', ['clean-styles'], function () {
+gulp.task('styles', ['clean-styles'], function() {
   log('Compiling SCSS -> CSS');
 
   return gulp
     .src(config.sass)
     .pipe($.sass().on('error', $.sass.logError))
     .pipe($.autoprefixer({browsers: ['last 2 version', '> 5%']}))
-    .pipe(gulp.dest(config.temp));
+    .pipe(gulp.dest(config.assets));
 });
 
 /**
  * Copy fonts
+ *
  * @return {Stream}
  */
-gulp.task('fonts', ['clean-fonts'], function () {
+gulp.task('fonts', ['clean_fonts'], function() {
   log('Copying fonts');
 
   return gulp
@@ -96,12 +89,12 @@ gulp.task('fonts', ['clean-fonts'], function () {
     .pipe(gulp.dest(config.build + 'fonts'));
 });
 
-
 /**
  * Compress images
+ *
  * @return {Stream}
  */
-gulp.task('images', ['clean-images'], function () {
+gulp.task('images', ['clean_images'], function() {
   log('Compressing and copying images');
 
   return gulp
@@ -110,15 +103,16 @@ gulp.task('images', ['clean-images'], function () {
     .pipe(gulp.dest(config.build + 'images'));
 });
 
-gulp.task('sass-watcher', function () {
+gulp.task('watch_sass', function() {
   gulp.watch([config.sass], ['styles']);
 });
 
 /**
  * Create $templateCache from the html templates
+ *
  * @return {Stream}
  */
-gulp.task('templatecache', ['clean-code'], function () {
+gulp.task('templatecache', ['clean_code'], function() {
   log('Creating an AngularJS $templateCache');
 
   return gulp
@@ -130,15 +124,16 @@ gulp.task('templatecache', ['clean-code'], function () {
       config.templateCache.file,
       config.templateCache.options
     ))
-    .pipe(gulp.dest(config.temp));
+    .pipe(gulp.dest(config.assets));
 });
 
 /**
  * Wire-up the bower dependencies
+ *
  * @return {Stream}
  */
 gulp.task('wiredep', function() {
-  log('Wiring the bower dependencies into the html');
+  log('Wiring the bower dependencies into index.html');
 
   var wiredep = require('wiredep').stream;
   var options = config.getWiredepDefaultOptions();
@@ -153,79 +148,45 @@ gulp.task('wiredep', function() {
     .pipe(gulp.dest(config.client));
 });
 
-///**
-// * Run the spec runner
-// * @return {Stream}
-// */
-//gulp.task('serve-specs', ['build-specs'], function(done) {
-//  log('run the spec runner');
-//  serve(true /* isDev */, true /* specRunner */);
-//  done();
-//});
-//
-////TODO: Find out how this will work with a GAE back-end
-////This will not work yet
-///**
-// * Inject all the spec files into the specs.html
-// * @return {Stream}
-// */
-//gulp.task('build-specs', ['templatecache'], function() {
-//  log('building the spec runner');
-//
-//  var wiredep = require('wiredep').stream;
-//  var templateCache = config.temp + config.templateCache.file;
-//  var options = config.getWiredepDefaultOptions();
-//  var specs = config.specs;
-//  options.devDependencies = true;
-//
-//  return gulp
-//    .src(config.specRunner)
-//    .pipe(wiredep(options))
-//    .pipe(inject(config.js, '', config.jsOrder))
-//    .pipe(inject(config.testlibraries, 'testlibraries'))
-//    .pipe(inject(config.specHelpers, 'spechelpers'))
-//    .pipe(inject(specs, 'specs', ['**/*']))
-//    .pipe(inject(templateCache, 'templates'))
-//    .pipe(gulp.dest(config.client));
-//});
-
-
-
 /**
  * Remove all fonts from the build folder
+ *
  * @param  {Function} done - callback when complete
  */
-gulp.task('clean-fonts', function (done) {
+gulp.task('clean_fonts', function(done) {
   clean(config.build + 'fonts/**/*.*', done);
 });
 
 /**
  * Remove all images from the build folder
+ *
  * @param  {Function} done - callback when complete
  */
-gulp.task('clean-images', function (done) {
+gulp.task('clean_images', function(done) {
   clean(config.build + 'images/**/*.*', done);
 });
 
 /**
- * Remove all styles from the build and temp folders
+ * Remove all styles from the build and assets folders
+ *
  * @param  {Function} done - callback when complete
  */
-gulp.task('clean-styles', function (done) {
+gulp.task('clean-styles', function(done) {
   var files = [].concat(
-    config.temp + '**/*.css',
+    config.assets + '**/*.css',
     config.build + 'styles/**/*.css'
   );
   clean(files, done);
 });
 
 /**
- * Remove all js and html from the build and temp folders
+ * Remove all js and html from the build and assets folders
+ *
  * @param  {Function} done - callback when complete
  */
-gulp.task('clean-code', function(done) {
+gulp.task('clean_code', function(done) {
   var files = [].concat(
-    config.temp + '**/*.js',
+    config.assets + '**/*.js',
     config.build + 'js/**/*.js',
     config.build + '**/*.html'
   );
@@ -233,30 +194,30 @@ gulp.task('clean-code', function(done) {
 });
 
 /**
- * Remove all files from the build, temp, and reports folders
+ * Remove all files from the build, assets, and reports folders
+ *
  * @param  {Function} done - callback when complete
  */
 gulp.task('clean', function(done) {
-  var delconfig = [].concat(config.build, config.temp, config.report);
+  var delconfig = [].concat(config.build, config.assets, config.report);
   log('Cleaning: ' + colors.blue(delconfig));
   del(delconfig, done);
 });
-
 
 /**
  * Build everything
  * This is separate so we can run tests on
  * optimize before handling image or fonts
  */
-gulp.task('build', ['optimize', 'images', 'fonts'], function () {
+gulp.task('build', ['optimize', 'images', 'fonts'], function() {
   log('Building everything');
 
   var msg = {
     title: 'gulp build',
     subtitle: 'Deployed to the build folder',
-    message: 'Running \'gulp serve-build\''
+    message: 'Running \'gulp serve_build\''
   };
-  del(config.temp);
+  del(config.assets);
   log(msg);
   notify(msg);
 });
@@ -264,24 +225,20 @@ gulp.task('build', ['optimize', 'images', 'fonts'], function () {
 /**
  * Optimize all files, move to a build folder,
  * and inject them into the new index.html
+ *
  * @return {Stream}
  */
 gulp.task('optimize', ['inject', 'test'], function() {
   log('Optimizing the js, css, and html');
-
-  //var assets = $.useref.assets({searchPath: config.client});
 
   // Filters are named for the gulp-useref path
   var cssFilter = $.filter('**/*.css');
   var jsAppFilter = $.filter('**/' + config.optimized.app);
   var jsLibFilter = $.filter('**/' + config.optimized.lib);
 
-  var templateCache = config.temp + config.templateCache.file;
-
   return gulp
     .src(config.index)
     .pipe($.plumber())
-    .pipe(inject(templateCache, 'templates'))
     // Gather all assets from the html with useref
     .pipe($.useref({searchPath: config.client}))
     // Get the css
@@ -296,32 +253,29 @@ gulp.task('optimize', ['inject', 'test'], function() {
     .pipe(jsAppFilter.restore())
     // Get the vendor javascript
     .pipe(jsLibFilter)
-    .pipe($.uglify()) // another option is to override wiredep to use min files
+    .pipe($.uglify())
     .pipe(jsLibFilter.restore())
-    // Take inventory of the file names for future rev numbers
-    //.pipe($.rev())
-    //// Replace the file names in the html with rev numbers
-    //.pipe($.revReplace())
     .pipe(gulp.dest(config.build));
 });
 
 gulp.task('inject', ['wiredep', 'styles', 'templatecache'], function() {
   log('Wire up css into the html, after files are ready');
+  var templateCache = config.assets + config.templateCache.file;
 
   return gulp
     .src(config.index)
     .pipe(inject(config.css))
+    .pipe(inject(templateCache, 'templates'))
     .pipe(gulp.dest(config.client));
 });
 
 /**
  * Run specs once and exit
  * To start servers and run midway specs as well:
- *    gulp test --startServers
- * @return {Stream}
+ * gulp test --startServers
  */
 gulp.task('test', ['vet', 'templatecache'], function(done) {
-  startTests(true /*singleRun*/ , done);
+  startTests(true, done);
 });
 
 /**
@@ -360,19 +314,67 @@ gulp.task('bump', function() {
  *    gulp autotest --startServers
  */
 gulp.task('autotest', function(done) {
-  startTests(false /*singleRun*/ , done);
+  startTests(false, done);
 });
 
+/**
+ * serve the dev environment
+ *
+ */
+gulp.task('serve_dev', ['inject'], function() {
+  serve(true);
+});
+
+/**
+ * serve the build environment
+ */
+gulp.task('serve_build', ['build'], function() {
+  serve(false);
+});
 
 /**
  * Optimize the code and re-load browserSync
  */
 gulp.task('browserSyncReload', ['optimize'], browserSync.reload);
 
+/**
+ * Copy js files to the exploded app dir
+ */
+gulp.task('copyJs', function() {
+  log('Copying js files to exploded directory');
+
+  return gulp.src(config.js)
+             .pipe($.changed(config.explodedApp))
+             .pipe(gulp.dest(config.explodedApp));
+});
+
+/**
+ * Copy assets to the exploded app dir
+ */
+gulp.task('copyAssets', ['styles', 'templatecache'], function() {
+  log('Copying assets to exploded directory');
+
+  return gulp.src(config.assets + '**/*.*')
+             .pipe($.changed(config.explodedAssets))
+             .pipe(gulp.dest(config.explodedAssets));
+});
+
+/**
+ * Copy index.html to the exploded dir
+ */
+gulp.task('copyIndex', function() {
+  log('Copying index file to exploded directory');
+
+  return gulp.src(config.index)
+             .pipe($.changed(config.exploded))
+             .pipe(gulp.dest(config.exploded));
+});
+
 ///////////////////////////////////
 
 /**
  * Formatter for bytediff to display the size changes after processing
+ *
  * @param  {Object} data - byte data
  * @return {String}      Difference in bytes, formatted
  */
@@ -384,9 +386,9 @@ function bytediffFormatter(data) {
     formatPercent(1 - data.percent, 2) + '%' + difference;
 }
 
-
 /**
  * Delete all files in a given path
+ *
  * @param  {Array}   path - array of paths to delete
  * @param  {Function} done - callback when complete
  */
@@ -397,18 +399,21 @@ function clean(path, done) {
 
 /**
  * When files change, log it
+ *
  * @param  {Object} event - event that fired
  */
-//function changeEvent(event) {
-//  var srcPattern = new RegExp('/.*(?=/' + config.source + ')/');
-//  log('File ' + event.path.replace(srcPattern, '') + ' ' + event.type);
-//}
+function changeEvent(event) {
+  var srcPattern = new RegExp('/.*(?=/' + config.source + ')/');
+  log('File ' + event.path.replace(srcPattern, '') + ' ' + event.type);
+}
 
 /**
  * Inject files in a sorted sequence at a specified inject label
+ *
  * @param   {Array} src   glob pattern for source files
  * @param   {String} label   The label name
  * @param   {Array} order   glob pattern for sort order of the files
+ *
  * @returns {Stream}   The stream
  */
 function inject(src, label, order) {
@@ -422,11 +427,12 @@ function inject(src, label, order) {
 
 /**
  * Order a stream
+ *
  * @param   {Stream} src   The gulp.src stream
  * @param   {Array} order Glob array pattern
  * @returns {Stream} The ordered stream
  */
-function orderSrc (src, order) {
+function orderSrc(src, order) {
   //order = order || ['**/*'];
   return gulp
     .src(src, {read: false})
@@ -435,6 +441,7 @@ function orderSrc (src, order) {
 
 /**
  * Format a number as a percentage
+ *
  * @param  {Number} num Number to format as a percent
  * @param  {Number} precision Precision of the decimal
  * @return {String} Formatted perentage
@@ -445,11 +452,13 @@ function formatPercent(num, precision) {
 
 /**
  * Format and return the header for files
+ *
  * @return {String} Formatted file header
  */
 function getHeader() {
   var pkg = require('./package.json');
-  var template = ['/**',
+  var template = [
+    '/**',
     ' * <%= pkg.name %> - <%= pkg.description %>',
     ' * @authors <%= pkg.authors %>',
     ' * @version v<%= pkg.version %>',
@@ -479,53 +488,50 @@ function log(msg) {
 
 /**
  * Start BrowserSync
- * --nosync will avoid browserSync
  */
-//function startBrowserSync(isDev, specRunner) {
-//  if (args.nosync || browserSync.active) {
-//    return;
-//  }
-//
-//  log('Starting BrowserSync on port ' + port);
-//
-//  // If build: watches the files, builds, and restarts browser-sync.
-//  // If dev: watches less, compiles it to css, browser-sync handles reload
-//  if (isDev) {
-//    gulp.watch([config.sass], ['styles'])
-//      .on('change', changeEvent);
-//  } else {
-//    gulp.watch([config.sass, config.js, config.html], ['browserSyncReload'])
-//      .on('change', changeEvent);
-//  }
-//
-//  var options = {
-//    proxy: 'localhost:' + port,
-//    port: 3000,
-//    files: isDev ? [
-//      config.client + '**/*.*',
-//      '!' + config.sass,
-//      config.temp + '**/*.css'
-//    ] : [],
-//    ghostMode: { // these are the defaults t,f,t,t
-//      clicks: true,
-//      location: false,
-//      forms: true,
-//      scroll: true
-//    },
-//    injectChanges: true,
-//    logFileChanges: true,
-//    logLevel: 'info',
-//    logPrefix: 'browsersync',
-//    notify: true,
-//    reloadDelay: 0 //1000
-//  } ;
-//  if (specRunner) {
-//    options.startPath = config.specRunnerFile;
-//  }
-//
-//  browserSync(options);
-//}
+function startBrowserSync(isDev, specRunner) {
+  if (browserSync.active) {
+    return;
+  }
 
+  log('Starting BrowserSync on port ' + port);
+
+  // If build: watches the files, builds, and restarts browser-sync.
+  // If dev: watches sass, compiles it to css, browser-sync handles reload
+  if (isDev) {
+    gulp.watch([config.sass, config.js, config.html, config.index], ['copyJs', 'copyAssets', 'copyIndex'])
+        .on('change', changeEvent);
+  } else {
+    gulp.watch([config.sass, config.js, config.html], ['browserSyncReload'])
+        .on('change', changeEvent);
+  }
+
+  var options = {
+    proxy: 'localhost:' + port,
+    port: 3000,
+    files: isDev ? [
+      config.explodedApp + '**/*.js',
+      config.explodedAssets + '**/*.*'
+    ] : [],
+    ghostMode: { // these are the defaults t,f,t,t
+      clicks: true,
+      location: false,
+      forms: true,
+      scroll: true
+    },
+    injectChanges: true,
+    logFileChanges: true,
+    logLevel: 'info',
+    logPrefix: 'browsersync',
+    notify: true,
+    reloadDelay: 0 //1000
+  };
+  if (specRunner) {
+    options.startPath = config.specRunnerFile;
+  }
+
+  browserSync(options);
+}
 
 /**
  * Start Plato inspector and visualizer
@@ -558,9 +564,9 @@ function startPlatoVisualizer(done) {
 
 /**
  * Start the tests using karma.
+ *
  * @param  {boolean} singleRun - True means run once and end (CI), or keep running (dev)
  * @param  {Function} done - Callback to fire when karma is done
- * @return {undefined}
  */
 function startTests(singleRun, done) {
   //var child;
@@ -586,7 +592,7 @@ function startTests(singleRun, done) {
   //    excludeFiles = serverSpecs;
   //  }
   //}
- karma.start();
+  karma.start();
 
   ////////////////
 
@@ -604,7 +610,7 @@ function startTests(singleRun, done) {
   }
 }
 
-function notify (options) {
+function notify(options) {
   var notifier = require('node-notifier');
   var notifyOptions = {
     sound: 'Bottle',
@@ -615,52 +621,10 @@ function notify (options) {
   notifier.notify(notifyOptions);
 }
 
-///**
-// * serve the code
-// * --debug-brk or --debug
-// * --nosync
-// * @param  {Boolean} isDev - dev or build mode
-// * @param  {Boolean} specRunner - server spec runner html
-// */
-//function serve(isDev, specRunner) {
-//  var debugMode = '--debug';
-//  var nodeOptions = getNodeOptions(isDev);
-//
-//  nodeOptions.nodeArgs = [debugMode + '=5858'];
-//
-//  if (args.verbose) {
-//    console.log(nodeOptions);
-//  }
-//
-//  return $.nodemon(nodeOptions)
-//    .on('restart', ['vet'], function(ev) {
-//      log('*** nodemon restarted');
-//      log('files changed:\n' + ev);
-//      setTimeout(function() {
-//        browserSync.notify('reloading now ...');
-//        browserSync.reload({stream: false});
-//      }, config.browserReloadDelay);
-//    })
-//    .on('start', function () {
-//      log('*** nodemon started');
-//      startBrowserSync(isDev, specRunner);
-//    })
-//    .on('crash', function () {
-//      log('*** nodemon crashed: script crashed for some reason');
-//    })
-//    .on('exit', function () {
-//      log('*** nodemon exited cleanly');
-//    });
-//}
-//
-//function getNodeOptions(isDev) {
-//  return {
-//    script: config.nodeServer,
-//    delayTime: 1,
-//    env: {
-//      PORT: port,
-//      NODE_ENV: isDev ? 'dev' : 'build'
-//    },
-//    watch: [config.server]
-//  };
-//}
+/**
+ * @param  {Boolean} isDev - dev or build mode
+ * @param  {Boolean} specRunner - server spec runner html
+ */
+function serve(isDev, specRunner) {
+  startBrowserSync(isDev, specRunner);
+}

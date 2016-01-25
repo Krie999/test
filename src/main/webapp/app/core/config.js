@@ -1,4 +1,4 @@
-(function () {
+(function() {
   'use strict';
 
   var core = angular.module('app.core');
@@ -16,13 +16,13 @@
     appErrorPrefix: 'Fourcast Error',
     appTitle: 'Template Project'
   };
-  
+
   core.value('config', config);
   
   core.config(configure);
 
   /* @ngInject */
-  function configure ($logProvider, routerHelperProvider, exceptionHandlerProvider) {
+  function configure($logProvider, routerHelperProvider, exceptionHandlerProvider) {
     $logProvider.debugEnabled(true);
     routerHelperProvider.configure(config.appErrorPrefix);
     exceptionHandlerProvider.configure(config.appErrorPrefix);

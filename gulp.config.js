@@ -1,16 +1,21 @@
-module.exports = function () {
+module.exports = function() {
+  //Change this for new apps
+  var appName = 'gae-template.war';
+  var build = './build/';
   var client = './src/main/webapp/';
   var clientApp = client + 'app/';
+  var exploded = build + 'exploded-app/';
   var report = './report/';
   var root = './';
+  var tests = './src/test/js/';
   var specRunnerFile = 'specs.html';
-  var temp = './.tmp/';
+  var assets = client + 'assets/';
   var wiredep = require('wiredep');
-  var bowerFiles = wiredep({devDependencies: true}).js;
   var bower = {
     json: require('./bower.json'),
-    directory: './bower_components/'
+    directory: './src/main/webapp/bower_components/'
   };
+  var bowerFiles = wiredep({directory: bower.directory, devDependencies: true}).js;
   var nodeModules = 'node_modules';
 
   var config = {
@@ -18,32 +23,36 @@ module.exports = function () {
      * File paths
      */
     allJs: [
-      './src/main/webapp/**/*.js',
-      './*.js'
+      client + '/**/*.js',
+      './*.js',
+      '!' + assets + '**/*.*',
+      '!' + bower.directory + '**/*.*'
     ],
-    build: './build/exploded-app/',
+    assets: assets,
+    build: build + 'libs/' + appName,
     client: client,
-    css: temp + 'styles.css',
+    css: assets + '*.css',
     fonts: bower.directory + 'font-awesome/fonts/**/*.*',
+    exploded: exploded,
+    explodedApp: exploded + 'app/',
+    explodedAssets: exploded + 'assets/',
     html: client + '**/*.html',
     htmlTemplates: clientApp + '**/*.html',
     images: client + 'images/**/*.*',
     index: client + 'index.html',
     js: [
-      clientApp + '**/module.js',
-      clientApp + '**/*.js',
-      '!' + clientApp + '**/*.spec.js'
+      clientApp + '**/*.module.js',
+      clientApp + '**/*.js'
     ],
-    jsOrder : [
+    jsOrder: [
       '**/app.module.js',
       '**/*.module.js',
       '**/*.js'
     ],
     report: report,
     root: root,
-    sass: client + 'styles/styles.scss',
+    sass: './helpers/sass/**/*.scss',
     source: 'src/main/webapps/',
-    temp: temp,
 
     /**
      * Optimized files
@@ -84,7 +93,7 @@ module.exports = function () {
     /**
      * specs.html, our HTML spec runner
      */
-    specRunner: client + specRunnerFile,
+    specRunner: tests + specRunnerFile,
     specRunnerFile: specRunnerFile,
 
     /**
@@ -102,16 +111,15 @@ module.exports = function () {
       nodeModules + '/chai/chai.js',
       nodeModules + '/sinon-chai/lib/sinon-chai.js'
     ],
-    specHelpers: [client + 'test-helpers/*.js'],
-    specs: [clientApp + '**/*.spec.js'],
-    defaultPort: '8001'
+    specHelpers: ['./helpers/test-helpers/**/*.js'],
+    specs: [tests + '**/*.spec.js'],
+    defaultPort: '8888'
   };
 
-  config.getWiredepDefaultOptions = function () {
+  config.getWiredepDefaultOptions = function() {
     return {
       bowerJson: config.bower.json,
-      directory: config.bower.directory,
-      ignorePath: config.bower.ignorePath
+      directory: config.bower.directory
     };
   };
 
@@ -128,14 +136,15 @@ module.exports = function () {
         config.specHelpers,
         clientApp + '**/*.module.js',
         clientApp + '**/*.js',
-        temp + config.templateCache.file/*,*/
+        assets + config.templateCache.file,
+        config.specs
         //config.serverIntegrationSpecs
       ),
       exclude: [],
       coverage: {
         dir: report + 'coverage',
         reporters: [
-          // reporters not supporting the `file` property
+          //reporters not supporting the `file` property
           {type: 'html', subdir: 'report-html'},
           {type: 'lcov', subdir: 'report-lcov'},
           {type: 'text-summary'} //, subdir: '.', file: 'text-summary.txt'}
@@ -143,7 +152,7 @@ module.exports = function () {
       },
       preprocessors: {}
     };
-    options.preprocessors[clientApp + '**/!(*.spec)+(.js)'] = ['coverage'];
+    options.preprocessors[clientApp + '**/*.js'] = ['coverage'];
     return options;
   }
 };

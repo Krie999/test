@@ -1,7 +1,6 @@
 package io.fourcast.gae.util;
 
-import com.google.appengine.repackaged.com.google.gson.Gson;
-
+import com.google.gson.Gson;
 import java.io.*;
 
 /**

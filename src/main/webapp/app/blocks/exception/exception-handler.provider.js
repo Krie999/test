@@ -1,6 +1,6 @@
-// Include in index.html so that app level exceptions are handled.
-// Exclude from testRunner.html which should run exactly what it wants to run
-(function () {
+//Include in index.html so that app level exceptions are handled.
+//Exclude from testRunner.html which should run exactly what it wants to run
+(function() {
   'use strict';
 
   angular
@@ -9,17 +9,17 @@
     .config(config);
 
   /* @ngInject */
-  function exceptionHandlerProvider(){
+  function exceptionHandlerProvider() {
     /* jshint validthis:true */
     this.config = {
       appErrorPrefix: undefined
     };
 
-    this.configure = function (appErrorPrefix) {
+    this.configure = function(appErrorPrefix) {
       this.config.appErrorPrefix = appErrorPrefix;
     };
 
-    this.$get = function () {
+    this.$get = function() {
       return {
         config: this.config
       };
@@ -32,16 +32,16 @@
    * @param  {Object} $provide
    */
   /* @ngInject */
-  function config ($provide) {
+  function config($provide) {
     $provide.decorator('$exceptionHandler', extendExceptionHandler);
   }
 
-  function extendExceptionHandler ($delegate, exceptionHandler, logger) {
-    return function (exception, cause) {
+  function extendExceptionHandler($delegate, exceptionHandler, logger) {
+    return function(exception, cause) {
       var appErrorPrefix = exceptionHandler.config.appErrorPrefix || '';
       var errorData = {
-        exception: exception,
-        cause: cause
+        cause: cause,
+        exception: exception
       };
       exception.message = appErrorPrefix + exception.message;
       $delegate(exception, cause);

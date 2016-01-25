@@ -8,31 +8,36 @@
 
   <!-- build:css styles/lib.css -->
   <!-- bower:css -->
-  <link rel="stylesheet" href="../../../bower_components/angular-material/angular-material.css" />
-  <link rel="stylesheet" href="../../../bower_components/toastr/toastr.css" />
+  <link rel="stylesheet" href="bower_components/angular-material/angular-material.css" />
+  <link rel="stylesheet" href="bower_components/toastr/toastr.css" />
   <!-- endbower -->
   <!-- endbuild -->
 
   <!-- build:css styles/app.css -->
   <!-- inject:css -->
-  <link rel="stylesheet" href="../../../.tmp/styles.css">
+  <link rel="stylesheet" href="assets/styles.css">
   <!-- endinject -->
   <!-- endbuild -->
 
 </head>
 <body>
 
+<ui-view></ui-view>
+
 <!-- build:js js/lib.js -->
 <!-- bower:js -->
-<script src="../../../bower_components/angular/angular.js"></script>
-<script src="../../../bower_components/angular-messages/angular-messages.js"></script>
-<script src="../../../bower_components/angular-aria/angular-aria.js"></script>
-<script src="../../../bower_components/angular-animate/angular-animate.js"></script>
-<script src="../../../bower_components/angular-material/angular-material.js"></script>
-<script src="../../../bower_components/lodash/lodash.js"></script>
-<script src="../../../bower_components/angular-ui-router/release/angular-ui-router.js"></script>
-<script src="../../../bower_components/jquery/dist/jquery.js"></script>
-<script src="../../../bower_components/toastr/toastr.js"></script>
+<script src="bower_components/angular/angular.js"></script>
+<script src="bower_components/angular-messages/angular-messages.js"></script>
+<script src="bower_components/angular-aria/angular-aria.js"></script>
+<script src="bower_components/angular-animate/angular-animate.js"></script>
+<script src="bower_components/angular-material/angular-material.js"></script>
+<script src="bower_components/lodash/lodash.js"></script>
+<script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+<script src="bower_components/jquery/dist/jquery.js"></script>
+<script src="bower_components/toastr/toastr.js"></script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+<script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+<script src="bower_components/angular-scroll/angular-scroll.js"></script>
 <!-- endbower -->
 <!-- endbuild -->
 
@@ -43,6 +48,7 @@
 <script src="app/blocks/logger/logger.module.js"></script>
 <script src="app/blocks/router/router.module.js"></script>
 <script src="app/core/core.module.js"></script>
+<script src="app/dashboard/dashboard.module.js"></script>
 <script src="app/blocks/exception/exception-handler.provider.js"></script>
 <script src="app/blocks/exception/exception.service.js"></script>
 <script src="app/blocks/logger/logger.factory.js"></script>
@@ -50,9 +56,12 @@
 <script src="app/core/config.js"></script>
 <script src="app/core/constants.js"></script>
 <script src="app/core/core.route.js"></script>
+<script src="app/dashboard/dashboard.controller.js"></script>
+<script src="app/dashboard/dashboard.route.js"></script>
 <!-- endinject -->
 
 <!-- inject:templates:js -->
+<script src="assets/templates.js"></script>
 <!-- endinject -->
 <!-- endbuild -->
 </body>
