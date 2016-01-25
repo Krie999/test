@@ -16,7 +16,6 @@ classes
 
 #Gradle
 .gradle
-gradle
 
 #Client
 bower_components
