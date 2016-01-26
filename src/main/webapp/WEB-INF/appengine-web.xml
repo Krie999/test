@@ -1,46 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
-    <!-- <application>bnppf-e2e-planning-tool-dev</application> -->
-    <!-- <application>bnppf-e2e-qa</application> -->
-    <!-- <application>bnppf-e2e</application> -->
-    <application>fourcast-gae-template</application>
-	<version>v1-0</version>
-	<threadsafe>true</threadsafe>
-	<instance-class>F1</instance-class>
-	<automatic-scaling>
-		<!-- <min-idle-instances>1</min-idle-instances> -->
-		<!-- <max-idle-instances>automatic</max-idle-instances> -->
-		<!-- ‘automatic’ is the default value. -->
-		<!-- min-pending-latency>500ms</min-pending-latency> -->
-		<!-- <max-pending-latency>automatic</max-pending-latency> -->
-		<!-- <max-concurrent-requests>25</max-concurrent-requests> -->
-	</automatic-scaling>
-	<module>default</module>
+  <!-- <application>bnppf-e2e-planning-tool-dev</application> -->
+  <!-- <application>bnppf-e2e-qa</application> -->
+  <!-- <application>bnppf-e2e</application> -->
+  <application>fourcast-gae-template</application>
+  <version>v1-0</version>
+  <threadsafe>true</threadsafe>
+  <instance-class>F1</instance-class>
+  <automatic-scaling>
+    <!-- <min-idle-instances>1</min-idle-instances> -->
+    <!-- <max-idle-instances>automatic</max-idle-instances> -->
+    <!-- ‘automatic’ is the default value. -->
+    <!-- min-pending-latency>500ms</min-pending-latency> -->
+    <!-- <max-pending-latency>automatic</max-pending-latency> -->
+    <!-- <max-concurrent-requests>25</max-concurrent-requests> -->
+  </automatic-scaling>
+  <module>default</module>
 
-	<system-properties>
-		<property name="java.util.logging.config.file" value="WEB-INF/logging.properties" />
-	</system-properties>
-    <static-files>
-        <include path="/css/**"/>
-        <include path="/img/**"/>
-        <include path="/js/**"/>
-        <include path="/templates/**"/>
-        <include path="/index.html"/>
-        <include path="/favicon.ico"/>
-
-        <include path="/node_modules/**/*.js"/>
-        <include path="/node_modules/**/*.css"/>
-        <include path="/node_modules/font-awesome/fonts/**"/>
-        <include path="/bower_components/**/*.js"/>
-
-    </static-files>
-    <resource-files>
-        <exclude path="/**.css"/>
-        <exclude path="/**.html"/>
-        <exclude path="/**.png"/>
-        <exclude path="/**.png"/>
-        <exclude path="/**.js"/>
-        <exclude path="/node_modules/**"/>
-        <exclude path="/bower_components/**"/>
-    </resource-files>
+  <system-properties>
+    <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
+  </system-properties>
+  <static-files>
+    <include path="bower_components/**/*.*"></include>
+    <include path="**/*.png"></include>
+    <include path="**/*.jpg"></include>
+  </static-files>
+  <resource-files>
+    <exclude path="bower_components/**/*.*"/>
+    <exclude path="**/*.png"></exclude>
+    <exclude path="**/*.jpg"></exclude>
+  </resource-files>
 </appengine-web-app>
