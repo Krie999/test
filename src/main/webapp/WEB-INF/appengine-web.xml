@@ -4,7 +4,7 @@
   <!-- <application>bnppf-e2e-qa</application> -->
   <!-- <application>bnppf-e2e</application> -->
   <application>fc-gae</application>
-  <version>v1-0</version>
+  <version>v0-0-1</version>
   <threadsafe>true</threadsafe>
   <instance-class>F1</instance-class>
   <automatic-scaling>
