@@ -20,7 +20,8 @@
 	<system-properties>
 		<property name="java.util.logging.config.file" value="WEB-INF/logging.properties" />
 	</system-properties>
-    <static-files>
+    <!-- TODO FIX
+        <static-files>
         <include path="/css/**"/>
         <include path="/img/**"/>
         <include path="/js/**"/>
@@ -43,4 +44,5 @@
         <exclude path="/node_modules/**"/>
         <exclude path="/bower_components/**"/>
     </resource-files>
+    -->
 </appengine-web-app>
