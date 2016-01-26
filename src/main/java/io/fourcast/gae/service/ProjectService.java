@@ -50,15 +50,14 @@ public class ProjectService extends AbstractService {
     /**
      * Saves the project, given that both the user has access and all validation pass. If the project exists in the DS
      * already, some data may be recovered from that instance (e.g. creationDate should not be modifiable afterwards)
-     * @param user the OAuth user
      * @param project the project that needs saving
      * @return the saved project. For new projects, an ID is assigned.
      * @throws UnauthorizedException if the user has no access to perform this operation
      */
     @ApiMethod(name = "saveProject", httpMethod = "post")
-    public Project saveProject(com.google.appengine.api.users.User user, Project project) throws UnauthorizedException, ConstraintViolationsException, FCTimestampConflictException, FCUserException, FCServerException {
+    public Project saveProject(Project project) throws UnauthorizedException, ConstraintViolationsException, FCTimestampConflictException, FCUserException, FCServerException {
 
-        user = validateUser(user,true);
+        com.google.appengine.api.users.User user = validateUser(true);
         User currentUser = userDao.getUserByEmail(user.getEmail());
 
         //TODO BUSINESS LOGIC - check if the user actually has the right to save this project. e.g. validate existing project
@@ -88,17 +87,15 @@ public class ProjectService extends AbstractService {
     }
 
     /**
-     *
-     * @param user the OAuth2.0 Google User
      * @param projectId the ID of the project to retrieve
      * @return the project with the given ID
      * @throws OAuthRequestException Login failure
      * @throws UnauthorizedException User has no access to the project
      */
     @ApiMethod(name = "getProject")
-    public Project getProject(com.google.appengine.api.users.User user, @Named("id") Long projectId) throws OAuthRequestException, UnauthorizedException {
+    public Project getProject(@Named("id") Long projectId) throws OAuthRequestException, UnauthorizedException {
 
-        validateUser(user);
+        validateUser();
 
         //TODO BUSINESS LOGIC - implement logic to check if the user should have access. we want to avoid tech-savy users who guess id's and then have access
         //TODO BUSINESS LOGIC - to projects they would otherwise not have access to with a regular flow (like using getProjectsForUser).
@@ -108,8 +105,8 @@ public class ProjectService extends AbstractService {
     }
 
     @ApiMethod(name = "getAllProjects", path = "getAllProjects")
-    public List<Project> getAllProjects(com.google.appengine.api.users.User user) throws UnauthorizedException, OAuthRequestException {
-        validateUser(user);
+    public List<Project> getAllProjects() throws UnauthorizedException, OAuthRequestException {
+        validateUser();
 
         //TODO BUSINESS LOGIC - validate if user has access to these projects! Not only FE validation!
 
@@ -118,8 +115,8 @@ public class ProjectService extends AbstractService {
 
 
     @ApiMethod(name = "getProjectsForUser")
-    public List<Project> getProjectsFortUser(com.google.appengine.api.users.User user) throws Exception {
-        user = validateUser(user);
+    public List<Project> getProjectsFortUser() throws Exception {
+        com.google.appengine.api.users.User user = validateUser();
 
         User dsUser = userDao.getUserByEmail(user.getEmail());
 

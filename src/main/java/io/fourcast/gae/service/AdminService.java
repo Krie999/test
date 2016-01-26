@@ -51,10 +51,10 @@ public class AdminService extends AbstractService {
      * @throws IOException
      */
     @ApiMethod(name = "loadAllUnknownUsers")
-    public List<User> loadAllUnknownUsers(com.google.appengine.api.users.User user) throws Exception {
+    public List<User> loadAllUnknownUsers() throws Exception {
 
         //user
-        validateUser(user, true);
+        validateUser(true);
         //get all members from the groups
         List<Member> allMembers = userManager.getGroupMembersForGroup(Globals.GAPPS_GROUP_ALL);
         List<String> emailsToLoad = new ArrayList<>();

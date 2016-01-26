@@ -38,19 +38,18 @@ public abstract class AbstractService {
      * Validates if the user has access to the application and for the role determined by the implementation method
      * of requiredReadRole().
      *
-     * @param user the OAuth user for which access and role has to be validated
      * @return the domain user in case he has access
      * @throws OAuthRequestException
      * @throws UnauthorizedException
      */
 
-    User validateUser(User user, boolean needsWrite) throws UnauthorizedException {
+    User validateUser(boolean needsWrite) throws UnauthorizedException {
 
         // check that the user is logged in and on the correct domain
-        user = AuthManager.validateUserLogin(user);
+        User user = AuthManager.validateUserLogin();
         Globals.USER_ROLE requiredRole = needsWrite ? requiredWriteRole() : requiredReadRole();
 
-        boolean hasPermissions = AuthManager.validateUserRole(user, requiredRole);
+        boolean hasPermissions = AuthManager.validateUserRole(requiredRole);
 
         if (!hasPermissions) {
             throw new UnauthorizedException("You don't have sufficient permissions. Required role is " + requiredRole);
@@ -60,13 +59,11 @@ public abstract class AbstractService {
 
     /**
      * similar as above, defaults to only needs read access
-     *
-     * @param user
      * @return
      * @throws UnauthorizedException
      */
-    User validateUser(User user) throws UnauthorizedException {
-        return validateUser(user, false);
+    User validateUser() throws UnauthorizedException {
+        return validateUser(false);
     }
 
 
