@@ -39,17 +39,15 @@ public class UserService extends AbstractService {
     private static UserDao userDao = new UserDao();
 
     /**
-     *
-     * @param user the Cloud Endpoints authorized user (OAuth2.0 Google Account)
      * @return the domain user behind the email address that was logged in
      * @throws UnauthorizedException when a user tries to access the service w/o having proper access
      * @throws FCServerException
      * @throws ConstraintViolationsException there is a logical error in the data
      */
     @ApiMethod(name = "user")
-    public User getUser(com.google.appengine.api.users.User user) throws UnauthorizedException, FCServerException, FCUserException {
+    public User getUser() throws UnauthorizedException, FCServerException, FCUserException {
         //only login access to app, can't fetch roles since roles users this service, inifinte loop.. TODO optimize
-        user = AuthManager.validateUserLogin(user);
+        com.google.appengine.api.users.User user = AuthManager.validateUserLogin();
 
         User dsUser = userDao.getUserByEmail(user.getEmail());
 
@@ -80,28 +78,26 @@ public class UserService extends AbstractService {
 
     /**
      * List all users
-     * @param user the OAuth user
      * @return all users in the application
      * @throws UnauthorizedException when a user tries to access the service w/o having proper access
      */
     @ApiMethod(name = "allUsers")
-    public List<User> getAllUsers(com.google.appengine.api.users.User user) throws  UnauthorizedException {
-        user = validateUser(user);
+    public List<User> getAllUsers() throws  UnauthorizedException {
+        com.google.appengine.api.users.User user= validateUser();
         List<User> users = userDao.getAllUsers();
         return users;
     }
 
     /**
      * List all users for a given role
-     * @param user the OAuth user
      * @param role the role for which the users need to be listed
      * @return the users matching the role
      * @throws UnauthorizedException when a user tries to access the service w/o having proper access
      */
     @ApiMethod(name = "allUsersForRole")
-    public List<User> getAllUsersForRole(com.google.appengine.api.users.User user, @Named("role") Globals.USER_ROLE role) throws  UnauthorizedException {
+    public List<User> getAllUsersForRole(@Named("role") Globals.USER_ROLE role) throws  UnauthorizedException {
         //get all users with role
-        user = validateUser(user);
+        com.google.appengine.api.users.User user= validateUser();
         List<User> users = userDao.getAllUsersWithRole(role);
         Collections.sort(users);
         return users;
