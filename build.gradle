@@ -51,6 +51,8 @@ dependencies {
   //bean validator
   compile 'org.apache.bval:bval-jsr303:0.5'
 
+  compile 'com.google.code.gson:gson:2.5'
+
   /* TESTING */
   testCompile 'junit:junit:4.10'
   testCompile 'com.google.appengine:appengine-api-labs:1.9.27'

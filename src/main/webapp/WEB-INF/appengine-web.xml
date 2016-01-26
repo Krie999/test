@@ -3,7 +3,7 @@
   <!-- <application>bnppf-e2e-planning-tool-dev</application> -->
   <!-- <application>bnppf-e2e-qa</application> -->
   <!-- <application>bnppf-e2e</application> -->
-  <application>fourcast-gae-template</application>
+  <application>fc-gae</application>
   <version>v1-0</version>
   <threadsafe>true</threadsafe>
   <instance-class>F1</instance-class>
@@ -20,14 +20,16 @@
   <system-properties>
     <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
   </system-properties>
+  "/>
+
   <static-files>
     <include path="bower_components/**/*.*"></include>
-    <include path="**/*.png"></include>
-    <include path="**/*.jpg"></include>
+    <include path="images/**/*.*"></include>
+    <include path="fonts/**/*.*"></include>
   </static-files>
   <resource-files>
-    <exclude path="bower_components/**/*.*"/>
-    <exclude path="**/*.png"></exclude>
-    <exclude path="**/*.jpg"></exclude>
+    <exclude path="bower_components/**/*.*"></exclude>
+    <exclude path="images/**/*.*"></exclude>
+    <exclude path="fonts/**/*.*"></exclude>
   </resource-files>
 </appengine-web-app>
