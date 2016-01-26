@@ -27,19 +27,13 @@ public class AuthManager {
     if (!gaeUserService.isUserLoggedIn()) {
       throw new UnauthorizedException("Please login before making requests.");
     }
+
+    //if on development, we're stuck with example@example.com.. modify here
+    if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Development && gaeUserService.getCurrentUser().getEmail().equalsIgnoreCase("test@example.com")) {
+      return new com.google.appengine.api.users.User(Globals.LOCAL_DEV_USER, Globals.ALLOWED_DOMAIN, "114265751743224928536");
+    }
+
     return gaeUserService.getCurrentUser();
-        /*
-
-        //if on development, we're stuck with example@example.com.. modify here
-        if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Development  && user.getEmail().equalsIgnoreCase("example@example.com")) {
-            return new com.google.appengine.api.users.User(Globals.LOCAL_DEV_USER,Globals.ALLOWED_DOMAIN,"114265751743224928536");
-        }
-
-        if(!user.getEmail().endsWith(Globals.ALLOWED_DOMAIN)){
-            throw new UnauthorizedException("Please login with your " + Globals.ALLOWED_DOMAIN + " account.");
-        }
-        return user;
-        */
   }
 
 

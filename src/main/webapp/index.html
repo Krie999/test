@@ -61,5 +61,22 @@
 <script src="assets/templates.js"></script>
 <!-- endinject -->
 <!-- endbuild -->
+
+<script>
+  function init(){
+    console.log("init complete");
+    var ROOT = 'https://fc-gae.appspot.com/_ah/api';
+    var ROOT = 'http://localhost:8080/_ah/api';
+    gapi.client.load('userService', 'v0.0.1', function() {
+      //API loaded, get user details
+      gapi.client.userService.user().execute(function(resp){
+        console.log(JSON.stringify(resp));
+      });
+    }, ROOT);
+  }
+
+</script>
+<script src="https://apis.google.com/js/client.js?onload=init">
+</script>
 </body>
 </html>
