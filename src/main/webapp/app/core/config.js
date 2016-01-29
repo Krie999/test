@@ -24,8 +24,8 @@
   /* @ngInject */
   function configure($logProvider, routerHelperProvider, exceptionHandlerProvider) {
     $logProvider.debugEnabled(true);
-    routerHelperProvider.configure(config.appErrorPrefix);
     exceptionHandlerProvider.configure(config.appErrorPrefix);
+    routerHelperProvider.configure({docTitle: config.appTitle + ': '});
   }
 
 })();
