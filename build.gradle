@@ -67,7 +67,7 @@ gulp {
 
 appengine {
 
-  httpPort = 8080
+  httpPort = 8081
   httpAddress = '0.0.0.0'
   downloadSdk = true
 
