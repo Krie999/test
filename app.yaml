@@ -1,4 +1,3 @@
-application: deploy-test-2
 module: default
 version: alpha-002
 runtime: java
