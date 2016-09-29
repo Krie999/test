@@ -1,3 +1,5 @@
-runtime:java
-vm:true
-module:default
+application: deploy-test-2
+module: default
+version: alpha-002
+runtime: java
+api_version: java1
