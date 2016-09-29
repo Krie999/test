@@ -3,7 +3,7 @@
   <!-- <application>bnppf-e2e-planning-tool-dev</application> -->
   <!-- <application>bnppf-e2e-qa</application> -->
   <!-- <application>bnppf-e2e</application> -->
-  <application>fc-gae</application>
+  <application>deploy-test-2</application>
   <version>v0-0-1</version>
   <threadsafe>true</threadsafe>
   <instance-class>F1</instance-class>
