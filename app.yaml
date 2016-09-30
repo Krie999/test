@@ -2,3 +2,5 @@ service: default
 runtime: java
 vm: true
 threadsafe: true
+runtime_config:
+   jdk: openjdk7
