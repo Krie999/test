@@ -3,4 +3,4 @@ runtime: java
 vm: true
 threadsafe: true
 runtime_config:
-   jdk: openjdk7
+   jdk: openjdk8
