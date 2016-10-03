@@ -1,5 +1,5 @@
 service: default
-runtime: java
+runtime: java7
 vm: false
 handlers:
 - url: /.*
