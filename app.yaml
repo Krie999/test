@@ -2,6 +2,6 @@ service: default
 runtime: java7
 vm: false
 handlers:
-- url: *
+- url: .*
   script: IGNORED
   secure: optional
