@@ -1,4 +1,7 @@
 service: default
 runtime: java
-vm: true
-threadsafe: true
+vm: false
+handlers:
+- url: /.*
+  script: IGNORED
+  secure: optional
